@@ -13,7 +13,7 @@ export class UserEntity {
   username: string;
 
   @Column()
-  fistName: string;
+  firstName: string;
 
   @Column()
   password: string;

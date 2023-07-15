@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity({ name: 'sessions' })
-export class Session implements ISession {
+export class SessionEntity implements ISession {
   @Index()
   @Column('bigint')
   expiredAt: number = Date.now();

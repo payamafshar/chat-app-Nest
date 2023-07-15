@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { IUsersService } from './users';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
@@ -13,7 +13,7 @@ import { hashPassword } from 'src/utils/helper';
 @Injectable()
 export class UsersService implements IUsersService {
   constructor(
-    @InjectRepository(UserEntity)
+    @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<UserEntity>,
   ) {}
   async createUser(userDetails: CreateUserDetails) {
@@ -34,6 +34,6 @@ export class UsersService implements IUsersService {
     findUserParams: FindUserParams,
     options?: FindUserOptions,
   ): Promise<UserEntity> {
-    return null;
+    return this.userRepository.findOne({ where: findUserParams });
   }
 }
