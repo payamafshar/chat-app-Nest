@@ -21,7 +21,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
-
+  app.enableCors({
+    origin: [configService.get('CORS_ORIGIN')],
+    credentials: true,
+  });
   app.use(
     session({
       secret: configService.get('COOKIE_SECRET'),

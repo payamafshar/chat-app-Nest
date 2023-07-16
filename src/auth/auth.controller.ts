@@ -5,6 +5,7 @@ import {
   Body,
   Get,
   UseGuards,
+  UseInterceptors,
   Res,
 } from '@nestjs/common';
 import { Routes, Services } from '../utils/constants';
@@ -14,6 +15,7 @@ import { IUsersService } from 'src/users/users';
 import { instanceToPlain } from 'class-transformer';
 import { LocalAuthGuard } from './utils/guards';
 import { Response } from 'express';
+import { RegisterInterceptor } from './utils/registerInterceptor';
 
 @Controller(Routes.AUTH)
 export class AuthController {
@@ -23,6 +25,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @UseInterceptors(RegisterInterceptor)
   async registerUser(@Body() createUserDto: CreateUserDto) {
     return instanceToPlain(await this.usersService.createUser(createUserDto));
   }

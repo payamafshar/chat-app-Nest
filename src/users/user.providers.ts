@@ -10,11 +10,3 @@ export const userProvider = [
     inject: ['DATA_SOURCE'],
   },
 ];
-export const sessionProvider = [
-  {
-    provide: 'SESSION_REPOSITORY',
-    useFactory: (dataSource: DataSource) =>
-      dataSource.getRepository(SessionEntity),
-    inject: ['DATA_SOURCE'],
-  },
-];

@@ -22,7 +22,6 @@ export class AuthService implements IAuthService {
       userDetails.password,
       user.password,
     );
-    console.log({ isPasswordValid });
     return isPasswordValid ? user : null;
   }
 }
