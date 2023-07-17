@@ -6,6 +6,7 @@ import {
   Get,
   UseGuards,
   UseInterceptors,
+  HttpStatus,
   Res,
 } from '@nestjs/common';
 import { Routes, Services } from '../utils/constants';
@@ -32,8 +33,11 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  loginUser(@Res() response: Response) {
-    return response.send('hello');
+  loginUser(@Res({ passthrough: true }) response: Response) {
+    return response.json({
+      statusCode: HttpStatus.OK,
+      message: 'Login Successfully',
+    });
   }
 
   @Post('logout')

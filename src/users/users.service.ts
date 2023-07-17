@@ -9,11 +9,12 @@ import {
   FindUserParams,
 } from 'src/utils/types';
 import { hashPassword } from 'src/utils/helper';
+import { Repositories } from 'src/utils/constants';
 
 @Injectable()
 export class UsersService implements IUsersService {
   constructor(
-    @Inject('USER_REPOSITORY')
+    @Inject(Repositories.USER)
     private readonly userRepository: Repository<UserEntity>,
   ) {}
   async createUser(userDetails: CreateUserDetails) {
@@ -36,4 +37,5 @@ export class UsersService implements IUsersService {
   ): Promise<UserEntity> {
     return this.userRepository.findOne({ where: findUserParams });
   }
+  s;
 }

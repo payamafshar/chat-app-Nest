@@ -1,3 +1,6 @@
+import { Request } from 'express';
+import { UserEntity } from './typeOrm/entities/user.entity';
+
 export type CreateUserDetails = {
   username: string;
   password: string;
@@ -19,3 +22,12 @@ export type FindUserParams = Partial<{
 export type FindUserOptions = Partial<{
   selectAll: boolean;
 }>;
+
+export interface AuthenticatedRequest extends Request {
+  user: UserEntity;
+}
+
+export type CreateConversationParams = {
+  username: string;
+  message: string;
+};
