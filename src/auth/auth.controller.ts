@@ -8,15 +8,17 @@ import {
   UseInterceptors,
   HttpStatus,
   Res,
+  Req,
 } from '@nestjs/common';
 import { Routes, Services } from '../utils/constants';
 import { IAuthService } from './auth';
 import { CreateUserDto } from './dtos/createUserDto';
 import { IUsersService } from 'src/users/users';
 import { instanceToPlain } from 'class-transformer';
-import { LocalAuthGuard } from './utils/guards';
-import { Response } from 'express';
+import { AuthenticatedGuard, LocalAuthGuard } from './utils/guards';
+import { Request, Response } from 'express';
 import { RegisterInterceptor } from './utils/registerInterceptor';
+// import { RegisterInterceptor } from './utils/registerInterceptor';
 
 @Controller(Routes.AUTH)
 export class AuthController {
@@ -33,16 +35,18 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  loginUser(@Res({ passthrough: true }) response: Response) {
-    return response.json({
-      statusCode: HttpStatus.OK,
-      message: 'Login Successfully',
-    });
+  loginUser(@Res() response: Response) {
+    return response.send('OK');
   }
 
   @Post('logout')
   logoutUser() {}
 
   @Get('status')
-  getUserStatus() {}
+  @UseGuards(AuthenticatedGuard)
+  async status(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    res.json({
+      user: req.user,
+    });
+  }
 }

@@ -7,6 +7,7 @@ import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './utils/typeOrm/entities/session.entity';
 import { DataSource } from 'typeorm';
 import { databaseProviders } from './database/database.provider';
+import * as passport from 'passport';
 // import dataSource from './db/dataSource';
 
 async function bootstrap() {
@@ -36,6 +37,8 @@ async function bootstrap() {
       },
     }),
   );
+  app.use(passport.initialize());
+  app.use(passport.session());
   await app.listen(configService.get('PORT'));
 }
 bootstrap();

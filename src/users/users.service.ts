@@ -37,5 +37,4 @@ export class UsersService implements IUsersService {
   ): Promise<UserEntity> {
     return this.userRepository.findOne({ where: findUserParams });
   }
-  s;
 }
