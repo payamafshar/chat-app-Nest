@@ -5,7 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './utils/typeOrm/entities/session.entity';
-import { DataSource } from 'typeorm';
+import { Connection, DataSource, getRepository } from 'typeorm';
 import { databaseProviders } from './database/database.provider';
 import * as passport from 'passport';
 // import dataSource from './db/dataSource';
@@ -22,6 +22,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+
+  const dataSource = app.get<DataSource>('DATA_SOURCE');
+  const sessionRepo = dataSource.getRepository(SessionEntity);
+
   app.enableCors({
     origin: [configService.get('CORS_ORIGIN')],
     credentials: true,
@@ -35,6 +39,7 @@ async function bootstrap() {
       cookie: {
         maxAge: 86400000, // cookie expires 1 day
       },
+      store: new TypeormStore().connect(sessionRepo),
     }),
   );
   app.use(passport.initialize());

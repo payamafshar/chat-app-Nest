@@ -5,6 +5,8 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
 import { ConversationModule } from './conversation/conversation.module';
+import { sessionProvider } from './utils/sessionProvider';
+import { databaseProviders } from './database/database.provider';
 
 @Module({
   imports: [
@@ -18,6 +20,6 @@ import { ConversationModule } from './conversation/conversation.module';
     ConversationModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [...databaseProviders, ...sessionProvider],
 })
 export class AppModule {}

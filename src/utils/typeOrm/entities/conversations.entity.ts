@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from './user.entity';
 
-@Entity()
+@Entity({ name: 'conversations' })
 export class ConversationEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,5 +17,6 @@ export class ConversationEntity {
   creator: UserEntity;
 
   @OneToOne(() => UserEntity, { createForeignKeyConstraints: false })
+  @JoinColumn()
   recipient: UserEntity;
 }

@@ -13,8 +13,7 @@ import { UsersModule } from 'src/users/users.module';
   imports: [DatabaseModule, UsersModule],
   providers: [
     ...conversationProvider,
-    LocalStrategy,
-    SessionSerializer,
+
     {
       provide: Services.CONVERSATION,
       useClass: ConversationService,
