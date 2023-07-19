@@ -31,3 +31,9 @@ export type CreateConversationParams = {
   username: string;
   message: string;
 };
+
+export type CreateMessageParams = {
+  content: string;
+  conversationId: number;
+  user: UserEntity;
+};

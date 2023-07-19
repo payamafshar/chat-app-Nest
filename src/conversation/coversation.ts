@@ -7,4 +7,6 @@ export interface IConversationService {
     user: UserEntity,
     conversationParams: CreateConversationParams,
   ): Promise<ConversationEntity>;
+
+  findConversationById(id: number): Promise<ConversationEntity>;
 }

@@ -1,7 +1,15 @@
-import { Body, Controller, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IConversationService } from './coversation';
-import { AuthenticatedGuard } from 'src/auth/utils/guards';
+import { AuthenticatedGuard } from 'src/auth/Strategy/guards';
 import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { CreateConversationDto } from './dtos/createConversationDto';
@@ -25,5 +33,10 @@ export class ConversationController {
       user,
       createConversatioPayload,
     );
+  }
+
+  @Get('/:id')
+  getConversationById(@Param('id') id: number) {
+    return this.conversationService.findConversationById(id);
   }
 }

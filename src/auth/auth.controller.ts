@@ -5,7 +5,6 @@ import {
   Body,
   Get,
   UseGuards,
-  UseInterceptors,
   HttpStatus,
   Res,
   Req,
@@ -15,7 +14,7 @@ import { IAuthService } from './auth';
 import { CreateUserDto } from './dtos/createUserDto';
 import { IUsersService } from 'src/users/users';
 import { instanceToPlain } from 'class-transformer';
-import { AuthenticatedGuard, LocalAuthGuard } from './utils/guards';
+import { AuthenticatedGuard, LocalAuthGuard } from './Strategy/guards';
 import { Request, Response } from 'express';
 
 @Controller(Routes.AUTH)

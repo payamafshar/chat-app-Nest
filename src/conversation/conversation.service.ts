@@ -35,4 +35,11 @@ export class ConversationService implements IConversationService {
 
     return conversation;
   }
+
+  async findConversationById(id: number): Promise<ConversationEntity> {
+    return await this.conversationRepository.findOne({
+      where: { id },
+      relations: ['creator', 'messages', 'recipient', 'messages.author'],
+    });
+  }
 }
