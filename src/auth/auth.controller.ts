@@ -5,7 +5,6 @@ import {
   Body,
   Get,
   UseGuards,
-  HttpStatus,
   Res,
   Req,
 } from '@nestjs/common';
@@ -41,8 +40,6 @@ export class AuthController {
   @Get('status')
   @UseGuards(AuthenticatedGuard)
   async status(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    res.json({
-      user: req.user,
-    });
+    res.send(req.user);
   }
 }

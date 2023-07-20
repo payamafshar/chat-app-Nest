@@ -58,5 +58,7 @@ export class MessageService implements IMessageService {
       order: { createdAt: 'DESC' },
       relations: ['author'],
     });
+
+    //there is option in typeOrm is loadRelationIds : boolean if neccessery
   }
 }

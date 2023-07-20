@@ -36,6 +36,18 @@ export class ConversationService implements IConversationService {
     return conversation;
   }
 
+  async getConversations(userId: number) {
+    return this.conversationRepository
+      .createQueryBuilder('conversation')
+      .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')
+      .leftJoinAndSelect('conversation.creator', 'creator')
+      .leftJoinAndSelect('conversation.recipient', 'recipient')
+      .where('creator.id = :userId', { userId })
+      .orWhere('recipient.id = :userId', { userId })
+      .orderBy('conversation.lastMessageSent', 'DESC')
+      .getMany();
+  }
+
   async findConversationById(id: number): Promise<ConversationEntity> {
     return await this.conversationRepository.findOne({
       where: { id },

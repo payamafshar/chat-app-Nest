@@ -9,4 +9,5 @@ export interface IConversationService {
   ): Promise<ConversationEntity>;
 
   findConversationById(id: number): Promise<ConversationEntity>;
+  getConversations(id: number): Promise<ConversationEntity[]>;
 }

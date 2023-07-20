@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -33,6 +34,12 @@ export class ConversationController {
       user,
       createConversatioPayload,
     );
+  }
+
+  @Get('conversations')
+  getConversations(@AuthUser() user: UserEntity) {
+    const { id: userId } = user;
+    return this.conversationService.getConversations(userId);
   }
 
   @Get('/:id')
