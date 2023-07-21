@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Repositories, Services } from 'src/utils/constants';
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
 import { Repository } from 'typeorm';
@@ -26,6 +26,9 @@ export class ConversationService implements IConversationService {
       { selectAll: true },
     );
 
+    if (!recipient) throw new BadRequestException();
+    if (recipient.id == creator.id)
+      throw new BadRequestException('cannot create conversation with yourSelf');
     const newConversation = this.conversationRepository.create();
     newConversation.creator = creator;
     newConversation.recipient = recipient;

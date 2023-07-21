@@ -55,7 +55,7 @@ export class MessageService implements IMessageService {
     console.log({ conversationId });
     return this.messageRepository.find({
       where: { conversation: { id: conversationId } },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: 'ASC' },
       relations: ['author'],
     });
 
