@@ -8,6 +8,7 @@ import { ConversationModule } from './conversation/conversation.module';
 import { sessionProvider } from './utils/sessionProvider';
 import { databaseProviders } from './database/database.provider';
 import { MessageModule } from './message/message.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MessageModule } from './message/message.module';
     DatabaseModule,
     ConversationModule,
     MessageModule,
+    GatewayModule,
   ],
   controllers: [],
   providers: [...databaseProviders, ...sessionProvider],
