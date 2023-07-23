@@ -9,6 +9,7 @@ import { sessionProvider } from './utils/sessionProvider';
 import { databaseProviders } from './database/database.provider';
 import { MessageModule } from './message/message.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { GatewayModule } from './gateway/gateway.module';
     ConversationModule,
     MessageModule,
     GatewayModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [],
   providers: [...databaseProviders, ...sessionProvider],

@@ -11,12 +11,11 @@ import { Server } from 'socket.io';
 @WebSocketGateway({
   cors: {
     origin: ['http://localhost:3000'],
+    credentials: true,
   },
 })
 export class MessagingGateway implements OnGatewayConnection {
-  handleConnection(client: any, ...args: any[]) {
-    console.log(client);
-  }
+  handleConnection(client: any, ...args: any[]) {}
   @WebSocketServer()
   server: Server;
 
@@ -29,5 +28,6 @@ export class MessagingGateway implements OnGatewayConnection {
   handleMessageCreateEvent(payload: any) {
     console.log('inside the message event');
     console.log(payload);
+    this.server.emit('onMessage', payload);
   }
 }

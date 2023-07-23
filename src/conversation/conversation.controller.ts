@@ -28,8 +28,6 @@ export class ConversationController {
     @AuthUser() user: UserEntity,
     @Body() createConversatioPayload: CreateConversationDto,
   ) {
-    console.log(user);
-
     return this.conversationService.createConversation(
       user,
       createConversatioPayload,

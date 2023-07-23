@@ -6,7 +6,7 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { SessionSerializer } from './sessionSerializer';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 
@@ -21,7 +21,7 @@ export class RegisterInterceptor
     const req = context.switchToHttp().getRequest();
     return next.handle().pipe(
       map(async (data: UserEntity) => {
-        if (data.username) {
+        if (data?.username) {
           const result = (await super.canActivate(context)) as boolean;
           const request = context.switchToHttp().getRequest();
           await super.logIn(request);

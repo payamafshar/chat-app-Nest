@@ -7,6 +7,8 @@ import {
   UseGuards,
   Res,
   Req,
+  UseInterceptors,
+  HttpStatus,
 } from '@nestjs/common';
 import { Routes, Services } from '../utils/constants';
 import { IAuthService } from './auth';
@@ -15,6 +17,8 @@ import { IUsersService } from 'src/users/users';
 import { instanceToPlain } from 'class-transformer';
 import { AuthenticatedGuard, LocalAuthGuard } from './Strategy/guards';
 import { Request, Response } from 'express';
+import { RegisterInterceptor } from './Strategy/registerInterceptor';
+import { SessionSerializer } from './Strategy/sessionSerializer';
 
 @Controller(Routes.AUTH)
 export class AuthController {
@@ -24,14 +28,15 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @UseInterceptors(RegisterInterceptor)
   async registerUser(@Body() createUserDto: CreateUserDto) {
     return instanceToPlain(await this.usersService.createUser(createUserDto));
   }
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  loginUser(@Res() response: Response) {
-    return response.send('OK');
+  loginUser(@Res({ passthrough: true }) response: Response) {
+    return response.send(HttpStatus.OK);
   }
 
   @Post('logout')
@@ -39,7 +44,10 @@ export class AuthController {
 
   @Get('status')
   @UseGuards(AuthenticatedGuard)
-  async status(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    res.send(req.user);
+  async status(
+    @Req() req: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return response.send(req.user);
   }
 }
