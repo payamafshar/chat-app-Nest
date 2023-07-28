@@ -39,7 +39,7 @@ export class ConversationService implements IConversationService {
     return conversation;
   }
 
-  async getConversations(userId: number) {
+  async getLoginUserConversations(userId: number) {
     return this.conversationRepository
       .createQueryBuilder('conversation')
       .leftJoinAndSelect('conversation.lastMessageSent', 'lastMessageSent')

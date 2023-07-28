@@ -31,16 +31,24 @@ export class MessageController {
       ...createConversationPayload,
       user,
     });
+    console.log(msg);
     this.eventEmitter.emit('create.message', msg);
     return;
   }
 
   @Get(':conversationId')
-  getMessagesFromConversation(
+  async getMessagesFromConversation(
     @Param('conversationId', ParseIntPipe)
     conversationId: number,
     @AuthUser() user: UserEntity,
   ) {
-    return this.messageService.getMessagesByConversationId(conversationId);
+    const messages = await this.messageService.getMessagesByConversationId(
+      conversationId,
+    );
+
+    return {
+      conversationId,
+      messages,
+    };
   }
 }

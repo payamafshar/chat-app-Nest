@@ -4,14 +4,14 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
-    useFactory: async (configService: ConfigService) => {
+    useFactory: () => {
       const dataSource = new DataSource({
         type: 'mysql',
         host: 'localhost',
         port: 3306,
         password: 'decksnod99m',
         username: 'root',
-        database: 'chat_app',
+        database: 'chat',
         entities: [__dirname + '/../**/**/**/*.entity{.ts,.js}'],
         synchronize: true,
       });

@@ -35,9 +35,9 @@ export class ConversationController {
   }
 
   @Get('conversations')
-  getConversations(@AuthUser() user: UserEntity) {
+  getLoginUserConversations(@AuthUser() user: UserEntity) {
     const { id: userId } = user;
-    return this.conversationService.getConversations(userId);
+    return this.conversationService.getLoginUserConversations(userId);
   }
 
   @Get('/:id')

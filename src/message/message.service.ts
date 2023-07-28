@@ -42,11 +42,13 @@ export class MessageService implements IMessageService {
     });
 
     const savedMessage = await this.messageRepository.save(newMessage);
-
     conversation.lastMessageSent = savedMessage;
+    const updated = await this.conversationRepository.save(conversation);
 
-    await this.conversationRepository.save(conversation);
-    return savedMessage;
+    return {
+      message: savedMessage,
+      conversation: updated,
+    };
   }
 
   async getMessagesByConversationId(

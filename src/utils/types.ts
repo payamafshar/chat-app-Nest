@@ -1,5 +1,7 @@
 import { Request } from 'express';
 import { UserEntity } from './typeOrm/entities/user.entity';
+import { ConversationEntity } from './typeOrm/entities/conversations.entity';
+import { MessageEntity } from './typeOrm/entities/messages.entity';
 
 export type CreateUserDetails = {
   username: string;
@@ -36,4 +38,9 @@ export type CreateMessageParams = {
   content: string;
   conversationId: number;
   user: UserEntity;
+};
+
+export type CreateMessageResponse = {
+  conversation: ConversationEntity;
+  message: MessageEntity;
 };

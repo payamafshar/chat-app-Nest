@@ -32,7 +32,7 @@ export class ConversationEntity {
   @JoinColumn()
   messages: MessageEntity[];
 
-  @OneToOne(() => MessageEntity)
+  @OneToOne(() => MessageEntity, { cascade: ['update', 'insert'] })
   @JoinColumn({ name: 'last_message_sent' })
   lastMessageSent: MessageEntity;
 }

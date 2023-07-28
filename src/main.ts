@@ -8,6 +8,7 @@ import { SessionEntity } from './utils/typeOrm/entities/session.entity';
 import { Connection, DataSource, getRepository } from 'typeorm';
 import { databaseProviders } from './database/database.provider';
 import * as passport from 'passport';
+import { WebsocketAdabter } from './gateway/gateway.adapter';
 // import dataSource from './db/dataSource';
 
 async function bootstrap() {
@@ -25,7 +26,8 @@ async function bootstrap() {
 
   const dataSource = app.get<DataSource>('DATA_SOURCE');
   const sessionRepo = dataSource.getRepository(SessionEntity);
-
+  const adapter = new WebsocketAdabter(app, sessionRepo);
+  app.useWebSocketAdapter(adapter);
   app.enableCors({
     origin: [configService.get('CORS_ORIGIN')],
     credentials: true,
