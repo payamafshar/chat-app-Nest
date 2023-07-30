@@ -44,3 +44,9 @@ export type CreateMessageResponse = {
   conversation: ConversationEntity;
   message: MessageEntity;
 };
+
+export type DeleteMessageParams = {
+  userId: number;
+  conversationId: number;
+  messageId: number;
+};

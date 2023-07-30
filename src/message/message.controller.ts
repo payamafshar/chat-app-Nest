@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Delete,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import IMessageService from './message';
@@ -31,7 +32,6 @@ export class MessageController {
       ...createConversationPayload,
       user,
     });
-    console.log(msg);
     this.eventEmitter.emit('create.message', msg);
     return;
   }
@@ -44,11 +44,22 @@ export class MessageController {
   ) {
     const messages = await this.messageService.getMessagesByConversationId(
       conversationId,
+      user,
     );
 
     return {
       conversationId,
       messages,
     };
+  }
+
+  @Delete(':messageId/:conversationId')
+  async deleteMessageInConversation(
+    @Param('messageId', ParseIntPipe) messageId: number,
+    @Param('conversationId', ParseIntPipe) conversationId: number,
+    @AuthUser() user: UserEntity,
+  ) {
+    const params = { userId: user.id, messageId, conversationId };
+    return this.messageService.deleteMessageWithParams(params);
   }
 }

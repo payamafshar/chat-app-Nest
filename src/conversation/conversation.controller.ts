@@ -14,6 +14,7 @@ import { AuthenticatedGuard } from 'src/auth/Strategy/guards';
 import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { CreateConversationDto } from './dtos/createConversationDto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller(Routes.CONVERSATION)
 @UseGuards(AuthenticatedGuard)
@@ -21,17 +22,21 @@ export class ConversationController {
   constructor(
     @Inject(Services.CONVERSATION)
     private readonly conversationService: IConversationService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @Post('createConversation')
-  createConversation(
+  async createConversation(
     @AuthUser() user: UserEntity,
     @Body() createConversatioPayload: CreateConversationDto,
   ) {
-    return this.conversationService.createConversation(
+    const conversation = await this.conversationService.createConversation(
       user,
       createConversatioPayload,
     );
+
+    this.eventEmitter.emit('conversation.created', conversation);
+    return conversation;
   }
 
   @Get('conversations')

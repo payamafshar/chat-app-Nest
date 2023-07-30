@@ -13,6 +13,7 @@ import {
   AuthenticatedSocket,
   IGatewaySessionManager,
 } from 'src/utils/interfaces';
+import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
 import { CreateMessageResponse } from 'src/utils/types';
 
 @WebSocketGateway({
@@ -30,6 +31,7 @@ export class MessagingGateway implements OnGatewayConnection {
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
     this.sessions.setUserSocket(socket.user.id, socket);
 
+    socket.emit('connected', { status: 'connnected' });
     console.log(this.sessions);
   }
 
@@ -58,5 +60,14 @@ export class MessagingGateway implements OnGatewayConnection {
 
     if (authorSocket) authorSocket.emit('onMessage', payload);
     if (recipientSocket) recipientSocket.emit('onMessage', payload);
+  }
+  //this event emited beacus for recipient conversation created shows on sidebar need socket but create conversation for own side handled in front end redux store
+  @OnEvent('conversation.created')
+  handleCreateConversation(payload: ConversationEntity) {
+    const { recipient } = payload;
+
+    const recipientSocket = this.sessions.getUserSocket(recipient.id);
+
+    if (recipientSocket) recipientSocket.emit('onConversationCreate', payload);
   }
 }
