@@ -50,3 +50,9 @@ export type DeleteMessageParams = {
   conversationId: number;
   messageId: number;
 };
+
+export type DeleteMessagePayload = {
+  conversationId: number;
+  userId: number;
+  messageId: number;
+};

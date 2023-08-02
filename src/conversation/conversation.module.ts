@@ -23,5 +23,6 @@ import { messageProvider } from 'src/message/messageProvider';
     },
   ],
   controllers: [ConversationController],
+  exports: [],
 })
 export class ConversationModule {}

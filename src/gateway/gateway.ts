@@ -8,13 +8,15 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { Services } from 'src/utils/constants';
+import { IConversationService } from 'src/conversation/coversation';
+import { Repositories, Services } from 'src/utils/constants';
 import {
   AuthenticatedSocket,
   IGatewaySessionManager,
 } from 'src/utils/interfaces';
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
-import { CreateMessageResponse } from 'src/utils/types';
+import { CreateMessageResponse, DeleteMessagePayload } from 'src/utils/types';
+import { Repository } from 'typeorm';
 
 @WebSocketGateway({
   cors: {
@@ -26,6 +28,8 @@ export class MessagingGateway implements OnGatewayConnection {
   constructor(
     @Inject(Services.GATEWAY_SESSION_MANAGER)
     readonly sessions: IGatewaySessionManager,
+    @Inject(Repositories.CONVERSATION)
+    private readonly conversationRepository: Repository<ConversationEntity>,
   ) {}
 
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
@@ -69,5 +73,24 @@ export class MessagingGateway implements OnGatewayConnection {
     const recipientSocket = this.sessions.getUserSocket(recipient.id);
 
     if (recipientSocket) recipientSocket.emit('onConversationCreate', payload);
+  }
+
+  @OnEvent('message.delete')
+  async handleDeleteMessage(payload: DeleteMessagePayload) {
+    const { conversationId, messageId, userId } = payload;
+
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: conversationId },
+      relations: ['creator', 'recipient'],
+    });
+
+    const { creator, recipient } = conversation;
+
+    const recipientSocket =
+      creator.id == userId
+        ? this.sessions.getUserSocket(recipient.id)
+        : this.sessions.getUserSocket(recipient.id);
+
+    if (recipientSocket) recipientSocket.emit('onDeleteMessage', payload);
   }
 }
