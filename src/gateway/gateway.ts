@@ -1,6 +1,7 @@
 import { Inject } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
+  ConnectedSocket,
   MessageBody,
   OnGatewayConnection,
   SubscribeMessage,
@@ -36,7 +37,6 @@ export class MessagingGateway implements OnGatewayConnection {
     this.sessions.setUserSocket(socket.user.id, socket);
 
     socket.emit('connected', { status: 'connnected' });
-    console.log(this.sessions);
   }
 
   @WebSocketServer()
@@ -45,6 +45,50 @@ export class MessagingGateway implements OnGatewayConnection {
   @SubscribeMessage('createMessage')
   handleCreateMessage(@MessageBody() data: any) {
     console.log('createMesssage');
+  }
+  @SubscribeMessage('onConversationJoin')
+  onConversationConnect(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    console.log('User Connected');
+
+    console.log(data);
+    client.join(data.conversationId);
+
+    client.to(data.conversationId).emit('userJoin');
+  }
+  @SubscribeMessage('onConversationLeave')
+  onConversatiuonLeaves(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    console.log('User disconnected');
+
+    console.log(data);
+    client.leave(data.conversationId);
+
+    client.to(data.conversationId).emit('userLeave');
+  }
+
+  @SubscribeMessage('onTypingStart')
+  onTypingStart(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    console.log(data);
+    // set all users connected to room exept himself
+    // this code sent recipient typing status
+    client.to(data.conversationId).emit('userStartTyping');
+  }
+  @SubscribeMessage('onTypingStop')
+  onTypingStop(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    // set all users connected to room exept himself
+    // this code sent recipient typing status
+    client.to(data.conversationId).emit('userStopTyping');
   }
 
   @OnEvent('create.message')
