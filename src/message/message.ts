@@ -14,5 +14,5 @@ export default interface IMessageService {
   ): Promise<MessageEntity[]>;
   deleteMessageWithParams(params: DeleteMessageParams);
 
-  editeMessageWithParams(params: EditMessageParams): void;
+  editeMessageWithParams(params: EditMessageParams): Promise<MessageEntity>;
 }

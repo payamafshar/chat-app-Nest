@@ -73,17 +73,15 @@ export class MessageService implements IMessageService {
   async editeMessageWithParams(params: EditMessageParams) {
     const { userId, conversationId, messageId, content } = params;
 
-    await this.messageRepository.update(
-      {
-        id: messageId,
-        author: { id: userId },
-        conversation: { id: conversationId },
-      },
-      {
-        content,
-      },
-    );
-    return;
+    const findedMessage = await this.messageRepository.findOne({
+      where: { id: messageId, author: { id: userId } },
+      relations: ['conversation', 'author'],
+    });
+
+    if (!findedMessage) throw new BadRequestException('Cannot edite Message');
+
+    findedMessage.content = content;
+    return this.messageRepository.save(findedMessage);
   }
 
   async deleteMessageWithParams(params: DeleteMessageParams) {

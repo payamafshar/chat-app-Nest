@@ -77,7 +77,7 @@ export class MessageController {
   }
 
   @Patch(':messageId/conversation/:conversationId')
-  editMessage(
+  async editMessage(
     @Param('messageId', ParseIntPipe) messageId: number,
     @Param('conversationId', ParseIntPipe) conversationId: number,
     @Body() editMessageDto: EditMessageDto,
@@ -90,6 +90,7 @@ export class MessageController {
       conversationId,
       content: editMessageDto.content,
     };
-    return this.messageService.editeMessageWithParams(params);
+    const message = await this.messageService.editeMessageWithParams(params);
+    return message;
   }
 }
