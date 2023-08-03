@@ -9,7 +9,11 @@ import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
 import { Repository } from 'typeorm';
 import IMessageService from './message';
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
-import { CreateMessageParams, DeleteMessageParams } from 'src/utils/types';
+import {
+  CreateMessageParams,
+  DeleteMessageParams,
+  EditMessageParams,
+} from 'src/utils/types';
 import { instanceToPlain } from 'class-transformer';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 
@@ -65,6 +69,23 @@ export class MessageService implements IMessageService {
 
     //there is option in typeOrm is loadRelationIds : boolean if neccessery
   }
+
+  async editeMessageWithParams(params: EditMessageParams) {
+    const { userId, conversationId, messageId, content } = params;
+
+    await this.messageRepository.update(
+      {
+        id: messageId,
+        author: { id: userId },
+        conversation: { id: conversationId },
+      },
+      {
+        content,
+      },
+    );
+    return;
+  }
+
   async deleteMessageWithParams(params: DeleteMessageParams) {
     const { userId, conversationId, messageId } = params;
 
