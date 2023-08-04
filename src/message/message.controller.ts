@@ -91,6 +91,8 @@ export class MessageController {
       content: editMessageDto.content,
     };
     const message = await this.messageService.editeMessageWithParams(params);
+
+    this.eventEmitter.emit('message.edit', message);
     return message;
   }
 }

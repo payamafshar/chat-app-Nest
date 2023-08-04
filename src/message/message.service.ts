@@ -75,7 +75,12 @@ export class MessageService implements IMessageService {
 
     const findedMessage = await this.messageRepository.findOne({
       where: { id: messageId, author: { id: userId } },
-      relations: ['conversation', 'author'],
+      relations: [
+        'conversation',
+        'author',
+        'conversation.recipient',
+        'conversation.creator',
+      ],
     });
 
     if (!findedMessage) throw new BadRequestException('Cannot edite Message');

@@ -16,6 +16,7 @@ import {
   IGatewaySessionManager,
 } from 'src/utils/interfaces';
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
+import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
 import { CreateMessageResponse, DeleteMessagePayload } from 'src/utils/types';
 import { Repository } from 'typeorm';
 
@@ -133,8 +134,20 @@ export class MessagingGateway implements OnGatewayConnection {
     const recipientSocket =
       creator.id == userId
         ? this.sessions.getUserSocket(recipient.id)
-        : this.sessions.getUserSocket(recipient.id);
+        : this.sessions.getUserSocket(creator.id);
 
     if (recipientSocket) recipientSocket.emit('onDeleteMessage', payload);
+  }
+
+  @OnEvent('message.edit')
+  async handleEditMessage(payload: MessageEntity) {
+    const { creator, recipient } = payload.conversation;
+
+    const recipientSocket =
+      creator.id == payload.author.id
+        ? this.sessions.getUserSocket(recipient.id)
+        : this.sessions.getUserSocket(creator.id);
+
+    if (recipientSocket) recipientSocket.emit('onEditMessage', payload);
   }
 }
