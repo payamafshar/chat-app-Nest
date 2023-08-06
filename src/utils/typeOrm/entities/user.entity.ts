@@ -5,8 +5,10 @@ import {
   Column,
   OneToMany,
   JoinColumn,
+  ManyToMany,
 } from 'typeorm';
 import { MessageEntity } from './messages.entity';
+import { GroupEntity } from './group.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -32,4 +34,7 @@ export class UserEntity {
   @OneToMany(() => MessageEntity, (message) => message.author)
   @JoinColumn()
   messages: MessageEntity[];
+
+  @ManyToMany(() => GroupEntity, (group) => group.users)
+  groups: GroupEntity[];
 }

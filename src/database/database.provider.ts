@@ -9,11 +9,11 @@ export const databaseProviders = [
         type: 'mysql',
         host: 'localhost',
         port: 3306,
+        synchronize: true,
         password: 'decksnod99m',
         username: 'root',
         database: 'chat',
-        entities: [__dirname + '/../**/**/**/*.entity{.ts,.js}'],
-        synchronize: true,
+        entities: ['dist/**/**/**/*.entity{.ts,.js}'],
       });
       return dataSource.initialize();
     },

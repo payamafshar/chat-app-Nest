@@ -1,27 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 import { ConversationEntity } from './conversations.entity';
-import { UserEntity } from './user.entity';
+import { BaseMessage } from './base-entity-abstract';
 
 @Entity({ name: 'messages' })
-export class MessageEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @CreateDateColumn()
-  createdAt: number;
-
-  @Column({ type: 'text' })
-  content: string;
-
+export class MessageEntity extends BaseMessage {
   @ManyToOne(() => ConversationEntity, (conversation) => conversation.messages)
   conversation: ConversationEntity;
-
-  @ManyToOne(() => UserEntity, (author) => author.messages)
-  author: UserEntity;
 }

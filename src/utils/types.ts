@@ -63,3 +63,13 @@ export type DeleteMessagePayload = {
   userId: number;
   messageId: number;
 };
+
+export type CreateGroupParams = {
+  users: string[];
+  title?: string;
+  creator: UserEntity;
+};
+
+export type GetGroupsParam = {
+  userId: number;
+};

@@ -3,6 +3,7 @@ export enum Routes {
   USERS = 'users',
   CONVERSATION = 'conversation',
   MESSAGE = 'messages',
+  GROUP = 'group',
 }
 
 export enum Services {
@@ -11,6 +12,7 @@ export enum Services {
   CONVERSATION = 'CONVERSATION_SERVICE',
   MESSAGE = 'MESSAGE_SERVICE',
   GATEWAY_SESSION_MANAGER = 'GATEWAY_SESSION_MANAGER',
+  GROUP = 'GROUP_SERVICE',
 }
 
 export enum Repositories {
@@ -18,4 +20,7 @@ export enum Repositories {
   CONVERSATION = 'CONVERSATION_REPOSITORY',
   MESSAGE = 'MESSAGE_REPOSITORY',
   SESSION = 'SESSION_REPOSITORY',
+  GROUP = 'GROUP_REPOSITORY',
 }
+
+export const DATASOURCE_TOKEN = 'DATA_SOURCE';
