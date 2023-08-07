@@ -5,6 +5,7 @@ import { CreateGroupParams, GetGroupsParam } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { IUsersService } from 'src/users/users';
 import { Repository } from 'typeorm';
+import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 
 @Injectable()
 export class GroupService implements IGroupService {
@@ -40,5 +41,12 @@ export class GroupService implements IGroupService {
       .where('user.id IN (:users)', { users: [param.userId] })
       .leftJoinAndSelect('group.users', 'users')
       .getMany();
+  }
+
+  getGroupById(groupId: number): Promise<GroupEntity> {
+    return this.groupRepository.findOne({
+      where: { id: groupId },
+      relations: ['messages', 'creator', 'users', 'lastMessageSent'],
+    });
   }
 }
