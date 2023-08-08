@@ -12,15 +12,17 @@ import { IGroupService } from '../group';
 import { CreateGroupDto } from '../dtos/createGroup.dto';
 import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller(Routes.GROUP)
 export class GroupController {
   constructor(
     @Inject(Services.GROUP) private readonly groupService: IGroupService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   @Post('createGroup')
-  createGroup(
+  async createGroup(
     @Body() createGroupDto: CreateGroupDto,
     @AuthUser() user: UserEntity,
   ) {
@@ -28,7 +30,9 @@ export class GroupController {
       ...createGroupDto,
       creator: user,
     };
-    return this.groupService.createGroup(params);
+    const group = await this.groupService.createGroup(params);
+    this.eventEmitter.emit('group.created', group);
+    return group;
   }
 
   @Get('getGroups')
@@ -38,6 +42,6 @@ export class GroupController {
 
   @Get('/:groupId')
   getGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
-    return this.groupService.getGroupById(groupId);
+    return this.groupService.findGroupById(groupId);
   }
 }

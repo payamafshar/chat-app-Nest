@@ -16,8 +16,14 @@ import {
   IGatewaySessionManager,
 } from 'src/utils/interfaces';
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
+import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
+import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.entity';
 import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
-import { CreateMessageResponse, DeleteMessagePayload } from 'src/utils/types';
+import {
+  CreateMessageResponse,
+  DeleteMessagePayload,
+  GroupMessageEventPayload,
+} from 'src/utils/types';
 import { Repository } from 'typeorm';
 
 @WebSocketGateway({
@@ -55,10 +61,30 @@ export class MessagingGateway implements OnGatewayConnection {
     console.log('User Connected');
 
     console.log(data);
-    client.join(data.conversationId);
+    client.join(`conversation-${data.conversationId}`);
 
-    client.to(data.conversationId).emit('userJoin');
+    client.to(`conversation-${data.conversationId}`).emit('userJoin');
   }
+
+  @SubscribeMessage('onGroupJoin')
+  handleGroupJoin(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    client.join(`group-${data.groupId}`);
+
+    client.to(`group-${data.groupId}`).emit('userGroupJoin');
+  }
+  @SubscribeMessage('onGroupLeave')
+  handleGroupLeave(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    client.leave(`group-${data.groupId}`);
+
+    client.to(`group-${data.groupId}`).emit('userGroupLeave');
+  }
+
   @SubscribeMessage('onConversationLeave')
   onConversatiuonLeaves(
     @ConnectedSocket() client: AuthenticatedSocket,
@@ -67,9 +93,9 @@ export class MessagingGateway implements OnGatewayConnection {
     console.log('User disconnected');
 
     console.log(data);
-    client.leave(data.conversationId);
+    client.leave(`conversation-${data.conversationId}`);
 
-    client.to(data.conversationId).emit('userLeave');
+    client.to(`conversation-${data.conversationId}`).emit('userLeave');
   }
 
   @SubscribeMessage('onTypingStart')
@@ -80,7 +106,7 @@ export class MessagingGateway implements OnGatewayConnection {
     console.log(data);
     // set all users connected to room exept himself
     // this code sent recipient typing status
-    client.to(data.conversationId).emit('userStartTyping');
+    client.to(`conversation-${data.conversationId}`).emit('userStartTyping');
   }
   @SubscribeMessage('onTypingStop')
   onTypingStop(
@@ -89,9 +115,9 @@ export class MessagingGateway implements OnGatewayConnection {
   ) {
     // set all users connected to room exept himself
     // this code sent recipient typing status
-    client.to(data.conversationId).emit('userStopTyping');
+    client.to(`conversation-${data.conversationId}`).emit('userStopTyping');
   }
-
+  //Conversation Events ------------------------------------------
   @OnEvent('create.message')
   handleMessageCreateEvent(payload: CreateMessageResponse) {
     console.log('inside the message event');
@@ -149,5 +175,20 @@ export class MessagingGateway implements OnGatewayConnection {
         : this.sessions.getUserSocket(creator.id);
 
     if (recipientSocket) recipientSocket.emit('onEditMessage', payload);
+  }
+  //Group Events --------------------------------
+  @OnEvent('group.created')
+  async handleCreateGroup(payload: GroupEntity) {
+    payload.users.forEach((user) => {
+      const socket = this.sessions.getUserSocket(user.id);
+      socket && socket.emit('onGroupCreate', payload);
+    });
+  }
+
+  @OnEvent('groupMessage.created')
+  async handleCreateGroupMessage(payload: GroupMessageEventPayload) {
+    const { id } = payload.group;
+
+    this.server.to(`group-${id}`).emit('onGroupMessageCreate');
   }
 }

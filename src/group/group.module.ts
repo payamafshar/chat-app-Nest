@@ -5,17 +5,24 @@ import { Services } from 'src/utils/constants';
 import { UsersModule } from 'src/users/users.module';
 import { userProvider } from 'src/users/user.providers';
 import { DatabaseModule } from 'src/database/database.module';
-import { groupProvider } from './groupProvider';
+import { groupMessageProvider, groupProvider } from './groupProvider';
+import { GroupMessageController } from './contorllers/group-message.controller';
+import { GroupMessageService } from './services/group-message.service';
 
 @Module({
   imports: [DatabaseModule, UsersModule],
-  controllers: [GroupController],
+  controllers: [GroupController, GroupMessageController],
   providers: [
     ...userProvider,
     ...groupProvider,
+    ...groupMessageProvider,
     {
       provide: Services.GROUP,
       useClass: GroupService,
+    },
+    {
+      provide: Services.GROUP_MESSAGE,
+      useClass: GroupMessageService,
     },
   ],
 })

@@ -2,6 +2,8 @@ import { Request } from 'express';
 import { UserEntity } from './typeOrm/entities/user.entity';
 import { ConversationEntity } from './typeOrm/entities/conversations.entity';
 import { MessageEntity } from './typeOrm/entities/messages.entity';
+import { GroupEntity } from './typeOrm/entities/group.entity';
+import { GroupMessageEntity } from './typeOrm/entities/groupMessage.entity';
 
 export type CreateUserDetails = {
   username: string;
@@ -72,4 +74,15 @@ export type CreateGroupParams = {
 
 export type GetGroupsParam = {
   userId: number;
+};
+
+export type CreateGroupMessageParams = {
+  groupId: number;
+  content: string;
+  author: UserEntity;
+};
+
+export type GroupMessageEventPayload = {
+  group: GroupEntity;
+  message: GroupMessageEntity;
 };

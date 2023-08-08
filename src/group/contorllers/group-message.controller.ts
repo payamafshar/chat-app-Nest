@@ -1,0 +1,43 @@
+import {
+  Body,
+  Controller,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
+import { Routes, Services } from 'src/utils/constants';
+import { IGroupMessageService } from '../group';
+import { CreateGroupMessageDto } from '../dtos/createGroupMessage.dto';
+import { AuthUser } from 'src/utils/decorators';
+import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+
+@Controller(Routes.GROUP_MESSAGE)
+export class GroupMessageController {
+  constructor(
+    @Inject(Services.GROUP_MESSAGE)
+    private readonly groupMessageService: IGroupMessageService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
+
+  @Post('create')
+  async createGroupMessage(
+    @Body() createGroupMessageDto: CreateGroupMessageDto,
+    @AuthUser() user: UserEntity,
+    @Param('groupId', ParseIntPipe) groupId: number,
+  ) {
+    const params = {
+      author: user,
+      groupId,
+      content: createGroupMessageDto.content,
+    };
+    const groupMessage = await this.groupMessageService.createGroupMessage(
+      params,
+    );
+
+    this.eventEmitter.emit('groupMessage.created', groupMessage);
+
+    return;
+  }
+}
