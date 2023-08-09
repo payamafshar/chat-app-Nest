@@ -188,7 +188,7 @@ export class MessagingGateway implements OnGatewayConnection {
   @OnEvent('groupMessage.created')
   async handleCreateGroupMessage(payload: GroupMessageEventPayload) {
     const { id } = payload.group;
-
-    this.server.to(`group-${id}`).emit('onGroupMessageCreate');
+    console.log(payload);
+    this.server.to(`group-${id}`).emit('onGroupMessageCreate', payload);
   }
 }

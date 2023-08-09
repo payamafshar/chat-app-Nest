@@ -9,18 +9,24 @@ import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.enti
 import { CreateGroupMessageParams } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { Repository } from 'typeorm';
+import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 
 @Injectable()
 export class GroupMessageService implements IGroupMessageService {
   constructor(
     @Inject(Repositories.GROUP_MESSAGE)
     private readonly groupMessageRepository: Repository<GroupMessageEntity>,
-    @Inject(Services.GROUP) private readonly groupService: IGroupService,
+    @Inject(Repositories.GROUP)
+    private readonly groupRepository: Repository<GroupEntity>,
   ) {}
 
   async createGroupMessage(params: CreateGroupMessageParams) {
     const { groupId, content, author } = params;
-    const findedGroup = await this.groupService.findGroupById(groupId);
+
+    const findedGroup = await this.groupRepository.findOne({
+      where: { id: groupId },
+      relations: ['users', 'lastMessageSent'],
+    });
 
     if (!findedGroup) throw new NotFoundException('group not found');
 
@@ -31,8 +37,8 @@ export class GroupMessageService implements IGroupMessageService {
 
     const groupMessageInstance = this.groupMessageRepository.create({
       content,
-      group: findedGroup,
       author,
+      group: findedGroup,
     });
 
     const savedGroupMessage = await this.groupMessageRepository.save(
@@ -40,12 +46,21 @@ export class GroupMessageService implements IGroupMessageService {
     );
 
     findedGroup.lastMessageSent = savedGroupMessage;
-    const updatedGroup = await this.groupService.saveGroup(findedGroup);
 
-    // returnin this groupMessage with group beacuse we want know to send event for wich group id with event emmitter
+    const updatedGroup = await this.groupRepository.save(findedGroup);
     return {
       message: savedGroupMessage,
       group: updatedGroup,
     };
+  }
+
+  async getAllGroupMessages(groupId: number): Promise<GroupMessageEntity[]> {
+    return await this.groupMessageRepository.find({
+      where: { group: { id: groupId } },
+      relations: ['author'],
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

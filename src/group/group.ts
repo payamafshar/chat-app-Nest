@@ -19,4 +19,6 @@ export interface IGroupService {
 
 export interface IGroupMessageService {
   createGroupMessage(params: CreateGroupMessageParams);
+
+  getAllGroupMessages(groupId: number): Promise<GroupMessageEntity[]>;
 }
