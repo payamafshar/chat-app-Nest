@@ -37,4 +37,20 @@ export class UsersService implements IUsersService {
   ): Promise<UserEntity> {
     return this.userRepository.findOne({ where: findUserParams });
   }
+
+  searchUsers(query: string) {
+    const statement = '(user.username LIKE :query)';
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where(statement, { query: `%${query}%` })
+      .limit(10)
+      .select([
+        'user.username',
+        'user.firstName',
+        'user.lastName',
+        'user.email',
+        'user.id',
+      ])
+      .getMany();
+  }
 }

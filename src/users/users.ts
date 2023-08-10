@@ -12,4 +12,6 @@ export interface IUsersService {
     findUserParams: FindUserParams,
     options?: FindUserOptions,
   ): Promise<UserEntity>;
+
+  searchUsers(query: string): Promise<UserEntity[]>;
 }
