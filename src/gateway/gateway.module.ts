@@ -7,12 +7,14 @@ import { Services } from 'src/utils/constants';
 import { GatewaySessionManager } from './gateway.session';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { conversationProvider } from 'src/conversation/conversation.provider';
+import { groupProvider } from 'src/group/groupProvider';
 
 @Module({
   imports: [DatabaseModule],
   providers: [
     MessagingGateway,
     ...conversationProvider,
+    ...groupProvider,
     {
       provide: Services.GATEWAY_SESSION_MANAGER,
       useClass: GatewaySessionManager,

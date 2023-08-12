@@ -86,3 +86,15 @@ export type GroupMessageEventPayload = {
   group: GroupEntity;
   message: GroupMessageEntity;
 };
+
+export type DeleteGroupMessageParams = {
+  groupId: number;
+  messageId: number;
+  userId: number;
+};
+
+export type DeleteGroupMessageEventPayload = {
+  userId: number;
+  groupId: number;
+  messageId: number;
+};

@@ -21,6 +21,7 @@ import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.enti
 import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
 import {
   CreateMessageResponse,
+  DeleteGroupMessageEventPayload,
   DeleteMessagePayload,
   GroupMessageEventPayload,
 } from 'src/utils/types';
@@ -38,6 +39,8 @@ export class MessagingGateway implements OnGatewayConnection {
     readonly sessions: IGatewaySessionManager,
     @Inject(Repositories.CONVERSATION)
     private readonly conversationRepository: Repository<ConversationEntity>,
+    @Inject(Repositories.GROUP)
+    private readonly groupRepository: Repository<GroupEntity>,
   ) {}
 
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
@@ -60,7 +63,6 @@ export class MessagingGateway implements OnGatewayConnection {
   ) {
     console.log('User Connected');
 
-    console.log(data);
     client.join(`conversation-${data.conversationId}`);
 
     client.to(`conversation-${data.conversationId}`).emit('userJoin');
@@ -190,5 +192,13 @@ export class MessagingGateway implements OnGatewayConnection {
     const { id } = payload.group;
     console.log(payload);
     this.server.to(`group-${id}`).emit('onGroupMessageCreate', payload);
+  }
+
+  @OnEvent('groupMessage.delete')
+  async handleDeleteGroupMessage(payload: DeleteGroupMessageEventPayload) {
+    const { messageId, groupId, userId } = payload;
+
+    const socket = this.sessions.getUserSocket(userId);
+    socket.to(`group-${groupId}`).emit('onDeleteGroupMessage', payload);
   }
 }

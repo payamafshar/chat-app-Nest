@@ -4,6 +4,7 @@ import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import {
   CreateGroupMessageParams,
   CreateGroupParams,
+  DeleteGroupMessageParams,
   GetGroupsParam,
 } from 'src/utils/types';
 
@@ -21,4 +22,6 @@ export interface IGroupMessageService {
   createGroupMessage(params: CreateGroupMessageParams);
 
   getAllGroupMessages(groupId: number): Promise<GroupMessageEntity[]>;
+
+  deleteGroupMessage(params: DeleteGroupMessageParams);
 }

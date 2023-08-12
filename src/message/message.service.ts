@@ -137,12 +137,10 @@ export class MessageService implements IMessageService {
         },
         { lastMessageSent: null },
       );
-      const deletedMessage = await this.messageRepository.delete({
+      return this.messageRepository.delete({
         id: message.id,
       });
-      console.log(deletedMessage.affected);
       //deleteing conversation when exist one message and user deleting that message conversation removed also double check
-      return this.conversationRepository.delete({ id: conversation.id });
     } else {
       console.log('There are more than 1 message');
       const newLastMessage = conversation.messages[SECOND_MESSAGE_INDEX];

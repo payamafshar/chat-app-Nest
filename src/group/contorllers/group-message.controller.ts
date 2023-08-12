@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -50,6 +51,32 @@ export class GroupMessageController {
     return {
       groupId,
       messages,
+    };
+  }
+
+  @Delete('message/:messageId')
+  async deleteMessageFromGroup(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('messageId', ParseIntPipe) messageId: number,
+    @AuthUser() user: UserEntity,
+  ) {
+    const params = {
+      messageId,
+      groupId,
+      userId: user.id,
+    };
+
+    await this.groupMessageService.deleteGroupMessage(params);
+
+    this.eventEmitter.emit('groupMessage.delete', {
+      userId: user.id,
+      messageId,
+      groupId,
+    });
+
+    return {
+      groupId,
+      messageId,
     };
   }
 }
