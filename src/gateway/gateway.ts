@@ -199,6 +199,7 @@ export class MessagingGateway implements OnGatewayConnection {
     const { messageId, groupId, userId } = payload;
 
     const socket = this.sessions.getUserSocket(userId);
+    //doing this beacus author side deleting handled by thunk function redux and if we do not this cuz ERROR
     socket.to(`group-${groupId}`).emit('onDeleteGroupMessage', payload);
   }
 }

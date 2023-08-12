@@ -22,6 +22,8 @@ export class GroupService implements IGroupService {
       return findedUserByUserName;
     });
     const users = (await Promise.all(usersPromise)).filter((user) => user);
+    const findCreatorInDto = users.find((user) => user.id == creator.id);
+    if (!findCreatorInDto) users.unshift(creator);
 
     const groupInstance = this.groupRepository.create({
       users,
