@@ -11,6 +11,7 @@ import {
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { IConversationService } from 'src/conversation/coversation';
+import { IGroupService } from 'src/group/group';
 import { Repositories, Services } from 'src/utils/constants';
 import {
   AuthenticatedSocket,
@@ -40,8 +41,7 @@ export class MessagingGateway implements OnGatewayConnection {
     readonly sessions: IGatewaySessionManager,
     @Inject(Repositories.CONVERSATION)
     private readonly conversationRepository: Repository<ConversationEntity>,
-    @Inject(Repositories.GROUP)
-    private readonly groupRepository: Repository<GroupEntity>,
+    @Inject(Services.GROUP) private readonly groupService: IGroupService,
   ) {}
 
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
@@ -53,6 +53,21 @@ export class MessagingGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
+  @SubscribeMessage('getOnlineGroupUsers')
+  async handleGetOnlineGroupUsers(
+    @MessageBody() data: any,
+    @ConnectedSocket() socket: AuthenticatedSocket,
+  ) {
+    const group = await this.groupService.findGroupById(parseInt(data.groupId));
+    if (!group) return;
+    const onlineUsers = [];
+    const offlineUsers = [];
+    group.users.forEach((user) => {
+      const socket = this.sessions.getUserSocket(user.id);
+      socket ? onlineUsers.push(user) : offlineUsers.push(user);
+    });
+    socket.emit('onlineGroupUsersReceived', { onlineUsers, offlineUsers });
+  }
   @SubscribeMessage('createMessage')
   handleCreateMessage(@MessageBody() data: any) {
     console.log('createMesssage');
@@ -216,7 +231,6 @@ export class MessagingGateway implements OnGatewayConnection {
     if (!authorSocket) throw new BadRequestException();
     //also can do with server.emit !!!
     authorSocket.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
-
     // this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
   }
 }

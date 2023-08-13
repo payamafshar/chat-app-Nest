@@ -8,13 +8,14 @@ import { GatewaySessionManager } from './gateway.session';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { conversationProvider } from 'src/conversation/conversation.provider';
 import { groupProvider } from 'src/group/groupProvider';
+import { GroupService } from 'src/group/services/group.service';
+import { GroupModule } from 'src/group/group.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, GroupModule],
   providers: [
     MessagingGateway,
     ...conversationProvider,
-    ...groupProvider,
     {
       provide: Services.GATEWAY_SESSION_MANAGER,
       useClass: GatewaySessionManager,

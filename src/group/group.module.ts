@@ -25,5 +25,11 @@ import { GroupMessageService } from './services/group-message.service';
       useClass: GroupMessageService,
     },
   ],
+  exports: [
+    {
+      provide: Services.GROUP,
+      useClass: GroupService,
+    },
+  ],
 })
 export class GroupModule {}
