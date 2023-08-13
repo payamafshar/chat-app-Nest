@@ -1,4 +1,4 @@
-import { Inject } from '@nestjs/common';
+import { Inject, BadRequestException } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
   ConnectedSocket,
@@ -7,6 +7,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { IConversationService } from 'src/conversation/coversation';
@@ -189,9 +190,11 @@ export class MessagingGateway implements OnGatewayConnection {
 
   @OnEvent('groupMessage.created')
   async handleCreateGroupMessage(payload: GroupMessageEventPayload) {
-    const { id } = payload.group;
+    const {
+      group: { id: groupId, users },
+    } = payload;
     console.log(payload);
-    this.server.to(`group-${id}`).emit('onGroupMessageCreate', payload);
+    this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload);
   }
 
   @OnEvent('groupMessage.delete')
@@ -207,7 +210,13 @@ export class MessagingGateway implements OnGatewayConnection {
   async handleUpdateGroupMessage(payload: GroupMessageEntity) {
     const {
       group: { id: groupId },
+      author: { id: authorId },
     } = payload;
-    this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
+    const authorSocket = this.sessions.getUserSocket(authorId);
+    if (!authorSocket) throw new BadRequestException();
+    //also can do with server.emit !!!
+    authorSocket.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
+
+    // this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
   }
 }

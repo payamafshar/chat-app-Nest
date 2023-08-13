@@ -139,6 +139,7 @@ export class GroupMessageService implements IGroupMessageService {
       where: { id: groupId },
       relations: ['lastMessageSent'],
     });
+    if (!group) throw new NotFoundException('group not found');
     const findedMessage = await this.groupMessageRepository.findOne({
       where: { id: messageId, author: { id: user.id } },
     });
@@ -152,7 +153,7 @@ export class GroupMessageService implements IGroupMessageService {
       findedMessage,
     );
 
-    if (findedMessage.id == group.lastMessageSent.id)
+    if (findedMessage.id == group.lastMessageSent?.id)
       this.groupRepository.update(
         { id: groupId },
         { lastMessageSent: updatedGroupMessage },

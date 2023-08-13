@@ -41,6 +41,7 @@ export class GroupService implements IGroupService {
       .leftJoinAndSelect('group.users', 'user')
       .where('user.id IN (:users)', { users: [param.userId] })
       .leftJoinAndSelect('group.users', 'users')
+      .leftJoinAndSelect('group.lastMessageSent', 'lastMessageSent')
       .orderBy('group.lastMessageSentAt', 'DESC')
       .getMany();
   }
