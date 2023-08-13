@@ -202,4 +202,12 @@ export class MessagingGateway implements OnGatewayConnection {
     //doing this beacus author side deleting handled by thunk function redux and if we do not this cuz ERROR
     socket.to(`group-${groupId}`).emit('onDeleteGroupMessage', payload);
   }
+
+  @OnEvent('groupMessage.update')
+  async handleUpdateGroupMessage(payload: GroupMessageEntity) {
+    const {
+      group: { id: groupId },
+    } = payload;
+    this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
+  }
 }

@@ -5,6 +5,7 @@ import {
   CreateGroupMessageParams,
   CreateGroupParams,
   DeleteGroupMessageParams,
+  EditGroupMessageParams,
   GetGroupsParam,
 } from 'src/utils/types';
 
@@ -24,4 +25,6 @@ export interface IGroupMessageService {
   getAllGroupMessages(groupId: number): Promise<GroupMessageEntity[]>;
 
   deleteGroupMessage(params: DeleteGroupMessageParams);
+
+  editGroupMessage(params: EditGroupMessageParams): Promise<GroupMessageEntity>;
 }

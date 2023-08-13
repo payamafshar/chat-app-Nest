@@ -9,6 +9,7 @@ import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.enti
 import {
   CreateGroupMessageParams,
   DeleteGroupMessageParams,
+  EditGroupMessageParams,
 } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { Repository } from 'typeorm';
@@ -127,5 +128,36 @@ export class GroupMessageService implements IGroupMessageService {
       );
       return this.groupMessageRepository.delete({ id: message.id });
     }
+  }
+
+  async editGroupMessage(
+    params: EditGroupMessageParams,
+  ): Promise<GroupMessageEntity> {
+    const { groupId, messageId, user, content } = params;
+
+    const group = await this.groupRepository.findOne({
+      where: { id: groupId },
+      relations: ['lastMessageSent'],
+    });
+    const findedMessage = await this.groupMessageRepository.findOne({
+      where: { id: messageId, author: { id: user.id } },
+    });
+
+    if (!findedMessage) throw new NotFoundException('Can not edit Message');
+
+    findedMessage.content = content;
+    findedMessage.group = group;
+    findedMessage.author = user;
+    const updatedGroupMessage = await this.groupMessageRepository.save(
+      findedMessage,
+    );
+
+    if (findedMessage.id == group.lastMessageSent.id)
+      this.groupRepository.update(
+        { id: groupId },
+        { lastMessageSent: updatedGroupMessage },
+      );
+
+    return updatedGroupMessage;
   }
 }
