@@ -22,6 +22,7 @@ import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.entity';
 import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
 import {
+  AddUserToGroupEventPayload,
   CreateMessageResponse,
   DeleteGroupMessageEventPayload,
   DeleteMessagePayload,
@@ -232,5 +233,21 @@ export class MessagingGateway implements OnGatewayConnection {
     //also can do with server.emit !!!
     authorSocket.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
     // this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
+  }
+
+  @OnEvent('user.added')
+  async handleAddUserToGroup(payload: AddUserToGroupEventPayload) {
+    const {
+      recipientId,
+      group: {
+        id: groupId,
+        creator: { id: authorId },
+      },
+    } = payload;
+
+    console.log({ gg: recipientId });
+    const authorSocket = this.sessions.getUserSocket(authorId);
+    if (!authorSocket) throw new BadRequestException();
+    authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
   }
 }

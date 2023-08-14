@@ -111,3 +111,8 @@ export type AddRecipientParam = {
   groupId: number;
   userId: number;
 };
+
+export type AddUserToGroupEventPayload = {
+  recipientId: number;
+  group: GroupEntity;
+};

@@ -19,7 +19,7 @@ export class GroupParticipentService implements IGroupParticipentService {
     private readonly groupRepository: Repository<GroupEntity>,
   ) {}
 
-  async addRecipient(params: AddRecipientParam): Promise<GroupEntity> {
+  async addRecipient(params: AddRecipientParam) {
     const { groupId, userId, username } = params;
 
     const recipient = await this.userService.findUser({ username });
@@ -28,7 +28,6 @@ export class GroupParticipentService implements IGroupParticipentService {
       where: { id: groupId },
       relations: ['users', 'creator'],
     });
-    console.log(group);
     if (!group) throw new NotFoundException('group not found');
 
     if (group.creator.id !== userId)
@@ -41,6 +40,9 @@ export class GroupParticipentService implements IGroupParticipentService {
 
     const savedGroup = await this.groupRepository.save(group);
 
-    return savedGroup;
+    return {
+      group: savedGroup,
+      recipientId: recipient.id,
+    };
   }
 }

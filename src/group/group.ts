@@ -31,5 +31,5 @@ export interface IGroupMessageService {
 }
 
 export interface IGroupParticipentService {
-  addRecipient(param: AddRecipientParam): Promise<GroupEntity>;
+  addRecipient(param: AddRecipientParam);
 }
