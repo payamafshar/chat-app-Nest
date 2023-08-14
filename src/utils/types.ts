@@ -105,3 +105,9 @@ export type EditGroupMessageParams = {
   messageId: number;
   content: string;
 };
+
+export type AddRecipientParam = {
+  username: string;
+  groupId: number;
+  userId: number;
+};

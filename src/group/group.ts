@@ -2,6 +2,7 @@ import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.entity';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import {
+  AddRecipientParam,
   CreateGroupMessageParams,
   CreateGroupParams,
   DeleteGroupMessageParams,
@@ -27,4 +28,8 @@ export interface IGroupMessageService {
   deleteGroupMessage(params: DeleteGroupMessageParams);
 
   editGroupMessage(params: EditGroupMessageParams): Promise<GroupMessageEntity>;
+}
+
+export interface IGroupParticipentService {
+  addRecipient(param: AddRecipientParam): Promise<GroupEntity>;
 }

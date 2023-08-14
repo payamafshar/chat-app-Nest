@@ -8,10 +8,16 @@ import { DatabaseModule } from 'src/database/database.module';
 import { groupMessageProvider, groupProvider } from './groupProvider';
 import { GroupMessageController } from './contorllers/group-message.controller';
 import { GroupMessageService } from './services/group-message.service';
+import { GroupParticipentController } from './contorllers/group-participent.controller';
+import { GroupParticipentService } from './services/group-participent.service';
 
 @Module({
   imports: [DatabaseModule, UsersModule],
-  controllers: [GroupController, GroupMessageController],
+  controllers: [
+    GroupController,
+    GroupMessageController,
+    GroupParticipentController,
+  ],
   providers: [
     ...userProvider,
     ...groupProvider,
@@ -23,6 +29,10 @@ import { GroupMessageService } from './services/group-message.service';
     {
       provide: Services.GROUP_MESSAGE,
       useClass: GroupMessageService,
+    },
+    {
+      provide: Services.GROUP_PARTICIPENT,
+      useClass: GroupParticipentService,
     },
   ],
   exports: [
