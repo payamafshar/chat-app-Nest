@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { IGroupParticipentService } from '../group';
 import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
-import { AddRecipientParam } from 'src/utils/types';
+import { AddRecipientParam, DeleteRecipientParam } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { IUsersService } from 'src/users/users';
 import { Repository } from 'typeorm';
@@ -44,5 +44,29 @@ export class GroupParticipentService implements IGroupParticipentService {
       group: savedGroup,
       recipientId: recipient.id,
     };
+  }
+  async delete(params: DeleteRecipientParam) {
+    const { removerId, groupId, recipientId } = params;
+
+    const group = await this.groupRepository.findOne({
+      where: { id: groupId },
+      relations: ['users', 'creator'],
+    });
+    console.log(group);
+    console.log(recipientId);
+    if (!group) throw new NotFoundException('group Not found');
+
+    if (removerId !== group.creator.id)
+      throw new BadRequestException('dont have premisson to delete user');
+    if (recipientId == group.creator.id)
+      throw new BadRequestException('owner can not leave group');
+
+    const newUsers = group.users.filter((u) => u.id !== recipientId);
+
+    group.users = newUsers;
+
+    await this.groupRepository.save(group);
+
+    return group;
   }
 }

@@ -113,6 +113,15 @@ export type AddRecipientParam = {
 };
 
 export type AddUserToGroupEventPayload = {
-  recipientId: number;
   group: GroupEntity;
+};
+export type DeleteRecipientFromGroupEventPayload = {
+  group: GroupEntity;
+  recipientId: number;
+};
+
+export type DeleteRecipientParam = {
+  recipientId: number;
+  removerId: number;
+  groupId: number;
 };

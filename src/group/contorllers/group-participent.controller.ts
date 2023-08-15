@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Inject,
   Param,
   ParseIntPipe,
@@ -33,7 +34,28 @@ export class GroupParticipentController {
       userId: user.id,
     };
     const payload = await this.groupParticipentService.addRecipient(params);
-    this.eventEmitter.emit('user.added', payload);
+    this.eventEmitter.emit('recipient.added', payload);
     return payload;
+  }
+
+  @Delete('deleteRecipient/:recipientId')
+  async deleteRecipient(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Param('recipientId', ParseIntPipe) recipientId: number,
+    @AuthUser() user: UserEntity,
+  ) {
+    const params = {
+      removerId: user.id,
+      recipientId,
+      groupId,
+    };
+
+    const group = await this.groupParticipentService.delete(params);
+
+    this.eventEmitter.emit('recipient.deleted', { group, recipientId });
+    return {
+      group,
+      recipientId,
+    };
   }
 }

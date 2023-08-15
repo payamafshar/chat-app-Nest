@@ -26,6 +26,7 @@ import {
   CreateMessageResponse,
   DeleteGroupMessageEventPayload,
   DeleteMessagePayload,
+  DeleteRecipientFromGroupEventPayload,
   GroupMessageEventPayload,
 } from 'src/utils/types';
 import { Repository } from 'typeorm';
@@ -235,8 +236,24 @@ export class MessagingGateway implements OnGatewayConnection {
     // this.server.to(`group-${groupId}`).emit('onUpdateGroupMessage', payload);
   }
 
-  @OnEvent('user.added')
+  @OnEvent('recipient.added')
   async handleAddUserToGroup(payload: AddUserToGroupEventPayload) {
+    const {
+      group: {
+        id: groupId,
+        creator: { id: authorId },
+      },
+    } = payload;
+
+    const authorSocket = this.sessions.getUserSocket(authorId);
+    if (!authorSocket) throw new BadRequestException();
+    authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+  }
+
+  @OnEvent('recipient.deleted')
+  async handleDeleteRecipientFromGroup(
+    payload: DeleteRecipientFromGroupEventPayload,
+  ) {
     const {
       recipientId,
       group: {
@@ -244,10 +261,8 @@ export class MessagingGateway implements OnGatewayConnection {
         creator: { id: authorId },
       },
     } = payload;
-
-    console.log({ gg: recipientId });
     const authorSocket = this.sessions.getUserSocket(authorId);
     if (!authorSocket) throw new BadRequestException();
-    authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+    authorSocket.to(`group-${groupId}`).emit('onUserDeletetFromGroup', payload);
   }
 }

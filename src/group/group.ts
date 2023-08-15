@@ -6,6 +6,7 @@ import {
   CreateGroupMessageParams,
   CreateGroupParams,
   DeleteGroupMessageParams,
+  DeleteRecipientParam,
   EditGroupMessageParams,
   GetGroupsParam,
 } from 'src/utils/types';
@@ -32,4 +33,5 @@ export interface IGroupMessageService {
 
 export interface IGroupParticipentService {
   addRecipient(param: AddRecipientParam);
+  delete(params: DeleteRecipientParam);
 }

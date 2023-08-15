@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
+// this guard trigger the LocalStrategy !imp
 @Injectable()
 export class LocalAuthGuard extends AuthGuard('local') {
   async canActivate(context: ExecutionContext) {
