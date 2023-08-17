@@ -9,6 +9,7 @@ import { Connection, DataSource, getRepository } from 'typeorm';
 import { databaseProviders } from './database/database.provider';
 import * as passport from 'passport';
 import { WebsocketAdabter } from './gateway/gateway.adapter';
+import { CustomResponse } from './utils/interceptro/response.interceptor';
 // import dataSource from './db/dataSource';
 
 async function bootstrap() {

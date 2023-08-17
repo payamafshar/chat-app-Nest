@@ -8,6 +8,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IGroupMessageService } from '../group';
@@ -16,6 +18,8 @@ import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EditGroupMessageDto } from '../dtos/editGroupMessageDto';
+import { Response } from 'express';
+import { CustomResponse } from 'src/utils/interceptro/response.interceptor';
 
 @Controller(Routes.GROUP_MESSAGE)
 export class GroupMessageController {
@@ -45,15 +49,18 @@ export class GroupMessageController {
   }
 
   @Get('allGroupMessages')
-  async getAllGroupMessages(@Param('groupId', ParseIntPipe) groupId: number) {
+  async getAllGroupMessages(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Res() response: Response,
+  ) {
     const messages = await this.groupMessageService.getAllGroupMessages(
       groupId,
     );
 
-    return {
+    return response.send({
       groupId,
       messages,
-    };
+    });
   }
 
   @Delete('message/:messageId')
@@ -61,6 +68,7 @@ export class GroupMessageController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('messageId', ParseIntPipe) messageId: number,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       messageId,
@@ -76,10 +84,10 @@ export class GroupMessageController {
       groupId,
     });
 
-    return {
+    return response.send({
       groupId,
       messageId,
-    };
+    });
   }
 
   @Patch('message/:messageId')
@@ -88,6 +96,7 @@ export class GroupMessageController {
     @Param('messageId', ParseIntPipe) messageId: number,
     @Body() editGroupMessageDto: EditGroupMessageDto,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       user,
@@ -101,6 +110,6 @@ export class GroupMessageController {
 
     this.eventEmitter.emit('groupMessage.update', updatedMessage);
 
-    return updatedMessage;
+    return response.send(updatedMessage);
   }
 }

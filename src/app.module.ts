@@ -11,6 +11,8 @@ import { MessageModule } from './message/message.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GroupModule } from './group/group.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { CustomResponse } from './utils/interceptro/response.interceptor';
 
 @Module({
   imports: [

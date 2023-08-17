@@ -33,7 +33,7 @@ export interface AuthenticatedRequest extends Request {
 
 export type CreateConversationParams = {
   username: string;
-  message: string;
+  message?: string;
 };
 
 export type CreateMessageParams = {

@@ -49,6 +49,7 @@ export class MessagingGateway implements OnGatewayConnection {
   handleConnection(socket: AuthenticatedSocket, ...args: any[]) {
     this.sessions.setUserSocket(socket.user.id, socket);
 
+    console.log(socket.user.id);
     socket.emit('connected', { status: 'connnected' });
   }
 
@@ -95,6 +96,7 @@ export class MessagingGateway implements OnGatewayConnection {
 
     client.to(`group-${data.groupId}`).emit('userGroupJoin');
   }
+
   @SubscribeMessage('onGroupLeave')
   handleGroupLeave(
     @ConnectedSocket() client: AuthenticatedSocket,
@@ -116,6 +118,13 @@ export class MessagingGateway implements OnGatewayConnection {
     client.leave(`conversation-${data.conversationId}`);
 
     client.to(`conversation-${data.conversationId}`).emit('userLeave');
+  }
+  @SubscribeMessage('onUpdateGroupMessage')
+  handleUpdateWithId(
+    @ConnectedSocket() client: AuthenticatedSocket,
+    @MessageBody() data: any,
+  ) {
+    const { userId } = data;
   }
 
   @SubscribeMessage('onTypingStart')
@@ -209,9 +218,10 @@ export class MessagingGateway implements OnGatewayConnection {
   async handleCreateGroupMessage(payload: GroupMessageEventPayload) {
     const {
       group: { id: groupId, users },
+      message: { author },
     } = payload;
-    console.log(payload);
     this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload);
+    this.server.emit('onGroup', payload);
   }
 
   @OnEvent('groupMessage.delete')
@@ -246,7 +256,6 @@ export class MessagingGateway implements OnGatewayConnection {
     } = payload;
 
     const authorSocket = this.sessions.getUserSocket(authorId);
-    if (!authorSocket) throw new BadRequestException();
     authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
   }
 
@@ -261,8 +270,13 @@ export class MessagingGateway implements OnGatewayConnection {
         creator: { id: authorId },
       },
     } = payload;
+    const ROOM_NAME = `group-${groupId}`;
+    const removedUserSocket = this.sessions.getUserSocket(recipientId);
     const authorSocket = this.sessions.getUserSocket(authorId);
-    if (!authorSocket) throw new BadRequestException();
-    authorSocket.to(`group-${groupId}`).emit('onUserDeletetFromGroup', payload);
+    if (removedUserSocket) {
+      removedUserSocket.emit('onGroupRemovedRecipient', payload);
+      removedUserSocket.leave(ROOM_NAME);
+    }
+    authorSocket.to(ROOM_NAME).emit('onUserDeletetFromGroup', payload);
   }
 }

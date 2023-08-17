@@ -8,6 +8,7 @@ import {
   ParseIntPipe,
   Delete,
   Patch,
+  Res,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import IMessageService from './message';
@@ -17,6 +18,7 @@ import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { CreateMessageDto } from './dtos/createMessageDto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EditMessageDto } from './dtos/editMessageDto';
+import { Response } from 'express';
 
 @Controller(Routes.MESSAGE)
 export class MessageController {
@@ -43,16 +45,17 @@ export class MessageController {
     @Param('conversationId', ParseIntPipe)
     conversationId: number,
     @AuthUser() user: UserEntity,
+    @Res({ passthrough: true }) response: Response,
   ) {
     const messages = await this.messageService.getMessagesByConversationId(
       conversationId,
       user,
     );
 
-    return {
+    return response.send({
       conversationId,
       messages,
-    };
+    });
   }
 
   @Delete(':messageId/conversation/:conversationId')
@@ -60,6 +63,7 @@ export class MessageController {
     @Param('messageId', ParseIntPipe) messageId: number,
     @Param('conversationId', ParseIntPipe) conversationId: number,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = { userId: user.id, messageId, conversationId };
     await this.messageService.deleteMessageWithParams(params);
@@ -70,10 +74,10 @@ export class MessageController {
       messageId,
     });
 
-    return {
+    return response.send({
       messageId,
       conversationId,
-    };
+    });
   }
 
   @Patch(':messageId/conversation/:conversationId')
@@ -82,6 +86,7 @@ export class MessageController {
     @Param('conversationId', ParseIntPipe) conversationId: number,
     @Body() editMessageDto: EditMessageDto,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     console.log('1');
     const params = {
@@ -93,6 +98,6 @@ export class MessageController {
     const message = await this.messageService.editeMessageWithParams(params);
 
     this.eventEmitter.emit('message.edit', message);
-    return message;
+    return response.send(message);
   }
 }

@@ -1,14 +1,18 @@
-import { Controller, Get, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Query, Res } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IUsersService } from './users';
-
+import { Response } from 'express';
 @Controller(Routes.USERS)
 export class UsersController {
   constructor(@Inject(Services.USERS) private userService: IUsersService) {}
 
   @Get('/search')
-  searchUsers(@Query('query') query: string) {
+  async searchUsers(
+    @Query('query') query: string,
+    @Res({ passthrough: true }) response: Response,
+  ) {
     console.log(query);
-    return this.userService.searchUsers(query);
+    const users = await this.userService.searchUsers(query);
+    return response.send(users);
   }
 }

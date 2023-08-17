@@ -35,7 +35,7 @@ export class AuthController {
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  loginUser(@Res({ passthrough: true }) response: Response) {
+  loginUser(@Res() response: Response) {
     return response.send(HttpStatus.OK);
   }
 
@@ -44,10 +44,7 @@ export class AuthController {
 
   @Get('status')
   @UseGuards(AuthenticatedGuard)
-  async status(
-    @Req() req: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async status(@Req() req: Request, @Res() response: Response) {
     return response.send(req.user);
   }
 }

@@ -57,18 +57,21 @@ export class ConversationService implements IConversationService {
       newConversation,
     );
 
-    const newMessage = this.messagesRepository.create({
-      content,
-      author: creator,
-      conversation,
-    });
+    if (content) {
+      const newMessage = this.messagesRepository.create({
+        content,
+        author: creator,
+        conversation,
+      });
 
-    const message = await this.messagesRepository.save(newMessage);
+      const message = await this.messagesRepository.save(newMessage);
 
-    await this.conversationRepository.update(
-      { id: conversation.id },
-      { lastMessageSent: message },
-    );
+      await this.conversationRepository.update(
+        { id: conversation.id },
+        { lastMessageSent: message },
+      );
+      return conversation;
+    }
 
     return conversation;
   }

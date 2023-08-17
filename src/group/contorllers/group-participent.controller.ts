@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Res,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IGroupParticipentService } from '../group';
@@ -13,6 +14,7 @@ import { AddRecipientDto } from '../dtos/addRecipient.dto';
 import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Response } from 'express';
 
 @Controller(Routes.GROUP_PARTICIPENT)
 export class GroupParticipentController {
@@ -27,6 +29,7 @@ export class GroupParticipentController {
     @Body() addRecipientDto: AddRecipientDto,
     @Param('groupId', ParseIntPipe) groupId: number,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       username: addRecipientDto.username,
@@ -35,7 +38,7 @@ export class GroupParticipentController {
     };
     const payload = await this.groupParticipentService.addRecipient(params);
     this.eventEmitter.emit('recipient.added', payload);
-    return payload;
+    return response.send(payload);
   }
 
   @Delete('deleteRecipient/:recipientId')
@@ -43,6 +46,7 @@ export class GroupParticipentController {
     @Param('groupId', ParseIntPipe) groupId: number,
     @Param('recipientId', ParseIntPipe) recipientId: number,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       removerId: user.id,
@@ -53,9 +57,9 @@ export class GroupParticipentController {
     const group = await this.groupParticipentService.delete(params);
 
     this.eventEmitter.emit('recipient.deleted', { group, recipientId });
-    return {
+    return response.send({
       group,
       recipientId,
-    };
+    });
   }
 }

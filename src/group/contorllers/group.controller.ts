@@ -6,6 +6,7 @@ import {
   Get,
   ParseIntPipe,
   Param,
+  Res,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IGroupService } from '../group';
@@ -13,6 +14,7 @@ import { CreateGroupDto } from '../dtos/createGroup.dto';
 import { AuthUser } from 'src/utils/decorators';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Response } from 'express';
 
 @Controller(Routes.GROUP)
 export class GroupController {
@@ -25,6 +27,7 @@ export class GroupController {
   async createGroup(
     @Body() createGroupDto: CreateGroupDto,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       ...createGroupDto,
@@ -32,16 +35,21 @@ export class GroupController {
     };
     const group = await this.groupService.createGroup(params);
     this.eventEmitter.emit('group.created', group);
-    return group;
+    return response.send(group);
   }
 
   @Get('getGroups')
-  getGroups(@AuthUser() user: UserEntity) {
-    return this.groupService.getGroups({ userId: user.id });
+  async getGroups(@AuthUser() user: UserEntity, @Res() response: Response) {
+    const groups = await this.groupService.getGroups({ userId: user.id });
+    return response.send(groups);
   }
 
   @Get('/:groupId')
-  getGroupById(@Param('groupId', ParseIntPipe) groupId: number) {
-    return this.groupService.findGroupById(groupId);
+  async getGroupById(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @Res() response: Response,
+  ) {
+    const group = await this.groupService.findGroupById(groupId);
+    return response.send(group);
   }
 }
