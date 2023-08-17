@@ -220,8 +220,9 @@ export class MessagingGateway implements OnGatewayConnection {
       group: { id: groupId, users },
       message: { author },
     } = payload;
+    //delete becuse recive new message in all over application not in room just
+    // this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload);
 
-    // this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload); delete becuse recive new message in all over application not in room just
     this.server.emit('onGroup', payload);
   }
 
