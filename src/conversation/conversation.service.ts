@@ -4,7 +4,7 @@ import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.ent
 import { Repository } from 'typeorm';
 import { IConversationService } from './coversation';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
-import { CreateConversationParams } from 'src/utils/types';
+import { AccessParams, CreateConversationParams } from 'src/utils/types';
 import { IUsersService } from 'src/users/users';
 import { MessageEntity } from 'src/utils/typeOrm/entities/messages.entity';
 
@@ -47,8 +47,8 @@ export class ConversationService implements IConversationService {
     if (!recipient) throw new BadRequestException();
     if (recipient.id == creator.id)
       throw new BadRequestException('cannot create conversation with yourSelf');
-    // const exists = await this.isCreated(creator.id, recipient.id);
-    // if (exists) throw new BadRequestException('Conversation Already Exist');
+    const exists = await this.isCreated(creator.id, recipient.id);
+    if (exists) throw new BadRequestException('Conversation Already Exist');
     const newConversation = this.conversationRepository.create({
       creator,
       recipient,
@@ -93,5 +93,13 @@ export class ConversationService implements IConversationService {
       where: { id },
       relations: ['creator', 'messages', 'recipient', 'messages.author'],
     });
+  }
+
+  async hasAccess({ conversationId, userId }: AccessParams) {
+    const conversation = await this.findConversationById(conversationId);
+    if (!conversation) throw new BadRequestException('conversation not found');
+    return (
+      conversation.creator.id === userId || conversation.recipient.id === userId
+    );
   }
 }

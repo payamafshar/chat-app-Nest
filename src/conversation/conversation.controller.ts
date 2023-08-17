@@ -41,7 +41,7 @@ export class ConversationController {
     return response.send(conversation);
   }
 
-  @Get('conversations')
+  @Get('/conversations')
   async getLoginUserConversations(
     @AuthUser() user: UserEntity,
     @Res() response: Response,
@@ -52,7 +52,7 @@ export class ConversationController {
     return response.send(conversations);
   }
 
-  @Get('/:id')
+  @Get('find/:id')
   async getConversationById(
     @Param('id') id: number,
     @Res() response: Response,

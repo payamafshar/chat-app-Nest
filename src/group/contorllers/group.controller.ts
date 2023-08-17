@@ -38,13 +38,13 @@ export class GroupController {
     return response.send(group);
   }
 
-  @Get('getGroups')
+  @Get('/getGroups')
   async getGroups(@AuthUser() user: UserEntity, @Res() response: Response) {
     const groups = await this.groupService.getGroups({ userId: user.id });
     return response.send(groups);
   }
 
-  @Get('/:groupId')
+  @Get('find/:groupId')
   async getGroupById(
     @Param('groupId', ParseIntPipe) groupId: number,
     @Res() response: Response,

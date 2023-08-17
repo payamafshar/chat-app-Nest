@@ -2,6 +2,7 @@ import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 import { GroupMessageEntity } from 'src/utils/typeOrm/entities/groupMessage.entity';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import {
+  AccessGroupParams,
   AddRecipientParam,
   CreateGroupMessageParams,
   CreateGroupParams,
@@ -19,6 +20,7 @@ export interface IGroupService {
   findGroupById(groupId: number): Promise<GroupEntity>;
 
   saveGroup(group: GroupEntity): Promise<GroupEntity>;
+  hasAccess(params: AccessGroupParams): Promise<UserEntity | undefined>;
 }
 
 export interface IGroupMessageService {

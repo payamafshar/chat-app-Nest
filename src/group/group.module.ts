@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { GroupController } from './contorllers/group.controller';
 import { GroupService } from './services/group.service';
 import { Services } from 'src/utils/constants';
@@ -10,6 +10,7 @@ import { GroupMessageController } from './contorllers/group-message.controller';
 import { GroupMessageService } from './services/group-message.service';
 import { GroupParticipentController } from './contorllers/group-participent.controller';
 import { GroupParticipentService } from './services/group-participent.service';
+import { GroupMiddleWare } from './middlewares/group.middleware';
 
 @Module({
   imports: [DatabaseModule, UsersModule],
@@ -42,4 +43,11 @@ import { GroupParticipentService } from './services/group-participent.service';
     },
   ],
 })
-export class GroupModule {}
+export class GroupModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(GroupMiddleWare).forRoutes({
+      path: '/group/find/:groupId',
+      method: RequestMethod.GET,
+    });
+  }
+}

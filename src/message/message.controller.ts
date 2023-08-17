@@ -45,7 +45,7 @@ export class MessageController {
     @Param('conversationId', ParseIntPipe)
     conversationId: number,
     @AuthUser() user: UserEntity,
-    @Res({ passthrough: true }) response: Response,
+    @Res() response: Response,
   ) {
     const messages = await this.messageService.getMessagesByConversationId(
       conversationId,

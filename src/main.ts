@@ -5,11 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import { TypeormStore } from 'connect-typeorm';
 import { SessionEntity } from './utils/typeOrm/entities/session.entity';
-import { Connection, DataSource, getRepository } from 'typeorm';
-import { databaseProviders } from './database/database.provider';
+import { DataSource } from 'typeorm';
 import * as passport from 'passport';
 import { WebsocketAdabter } from './gateway/gateway.adapter';
-import { CustomResponse } from './utils/interceptro/response.interceptor';
 // import dataSource from './db/dataSource';
 
 async function bootstrap() {

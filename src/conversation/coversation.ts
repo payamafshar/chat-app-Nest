@@ -1,6 +1,6 @@
 import { ConversationEntity } from 'src/utils/typeOrm/entities/conversations.entity';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
-import { CreateConversationParams } from 'src/utils/types';
+import { AccessParams, CreateConversationParams } from 'src/utils/types';
 
 export interface IConversationService {
   createConversation(
@@ -10,4 +10,5 @@ export interface IConversationService {
 
   findConversationById(id: number): Promise<ConversationEntity>;
   getLoginUserConversations(id: number): Promise<ConversationEntity[]>;
+  hasAccess(params: AccessParams);
 }

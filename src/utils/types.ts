@@ -66,6 +66,15 @@ export type DeleteMessagePayload = {
   messageId: number;
 };
 
+export type AccessParams = {
+  userId: number;
+  conversationId: number;
+};
+export type AccessGroupParams = {
+  groupId: number;
+  userId: number;
+};
+
 export type CreateGroupParams = {
   users: string[];
   title?: string;
@@ -114,6 +123,7 @@ export type AddRecipientParam = {
 
 export type AddUserToGroupEventPayload = {
   group: GroupEntity;
+  recipientId: number;
 };
 export type DeleteRecipientFromGroupEventPayload = {
   group: GroupEntity;

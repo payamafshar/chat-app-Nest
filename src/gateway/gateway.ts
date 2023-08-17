@@ -220,7 +220,8 @@ export class MessagingGateway implements OnGatewayConnection {
       group: { id: groupId, users },
       message: { author },
     } = payload;
-    this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload);
+
+    // this.server.to(`group-${groupId}`).emit('onGroupMessageCreate', payload); delete becuse recive new message in all over application not in room just
     this.server.emit('onGroup', payload);
   }
 
@@ -249,14 +250,18 @@ export class MessagingGateway implements OnGatewayConnection {
   @OnEvent('recipient.added')
   async handleAddUserToGroup(payload: AddUserToGroupEventPayload) {
     const {
+      recipientId,
       group: {
         id: groupId,
         creator: { id: authorId },
       },
     } = payload;
 
+    console.log(recipientId);
     const authorSocket = this.sessions.getUserSocket(authorId);
+    const recipientSocket = this.sessions.getUserSocket(recipientId);
     authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+    recipientSocket.emit('recipientAddedGroup', payload.group);
   }
 
   @OnEvent('recipient.deleted')

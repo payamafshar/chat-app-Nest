@@ -9,7 +9,6 @@ import {
   Patch,
   Post,
   Res,
-  UseInterceptors,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import { IGroupMessageService } from '../group';
@@ -19,7 +18,6 @@ import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EditGroupMessageDto } from '../dtos/editGroupMessageDto';
 import { Response } from 'express';
-import { CustomResponse } from 'src/utils/interceptro/response.interceptor';
 
 @Controller(Routes.GROUP_MESSAGE)
 export class GroupMessageController {

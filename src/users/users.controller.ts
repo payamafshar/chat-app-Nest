@@ -7,10 +7,7 @@ export class UsersController {
   constructor(@Inject(Services.USERS) private userService: IUsersService) {}
 
   @Get('/search')
-  async searchUsers(
-    @Query('query') query: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async searchUsers(@Query('query') query: string, @Res() response: Response) {
     console.log(query);
     const users = await this.userService.searchUsers(query);
     return response.send(users);
