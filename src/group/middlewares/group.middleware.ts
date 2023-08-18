@@ -23,7 +23,7 @@ export class GroupMiddleWare implements NestMiddleware {
     if (!userId) throw new UnauthorizedException('Unauthorized');
     const groupId = parseInt(req.params.groupId);
     console.log('inside middleware 11111111111111');
-    // if (isNaN(groupId)) throw new BadRequestException('can not get group');
+    if (isNaN(groupId)) throw new BadRequestException('can not get group');
     const user = await this.groupService.hasAccess({
       groupId,
       userId,

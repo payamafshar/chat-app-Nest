@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { IGroupService } from '../group';
 import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 import {
@@ -6,11 +11,13 @@ import {
   AccessParams,
   CreateGroupParams,
   GetGroupsParam,
+  TransferOwnerParams,
 } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { IUsersService } from 'src/users/users';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
+import { group } from 'console';
 
 @Injectable()
 export class GroupService implements IGroupService {
@@ -58,7 +65,7 @@ export class GroupService implements IGroupService {
   findGroupById(groupId: number): Promise<GroupEntity> {
     return this.groupRepository.findOne({
       where: { id: groupId },
-      relations: ['messages', 'creator', 'users', 'lastMessageSent'],
+      relations: ['messages', 'creator', 'users', 'lastMessageSent', 'owner'],
     });
   }
 
@@ -72,5 +79,19 @@ export class GroupService implements IGroupService {
     const group = await this.findGroupById(groupId);
     if (!group) throw new NotFoundException();
     return group.users.find((user) => user.id === userId);
+  }
+  async transferOwner({ userId, username, groupId }: TransferOwnerParams) {
+    const group = await this.findGroupById(groupId);
+    if (!group) throw new NotFoundException('group Not Found');
+
+    const newOwner = await this.usersService.findUser({ username });
+    if (!newOwner) throw new BadRequestException('cannot transfer admin');
+    if (userId == newOwner.id)
+      throw new BadRequestException('you are already owner');
+    if (userId !== group.creator.id || userId !== group.owner.id)
+      throw new BadRequestException('insuficent premission');
+
+    group.owner = newOwner;
+    return this.groupRepository.save(group);
   }
 }

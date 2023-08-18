@@ -26,11 +26,11 @@ export class GroupParticipentService implements IGroupParticipentService {
     if (!recipient) throw new BadRequestException('cannot Add User');
     const group = await this.groupRepository.findOne({
       where: { id: groupId },
-      relations: ['users', 'creator'],
+      relations: ['users', 'creator', 'owner'],
     });
     if (!group) throw new NotFoundException('group not found');
 
-    if (group.creator.id !== userId)
+    if (group.creator.id !== userId && group.owner.id !== userId)
       throw new BadRequestException('you dont have premission to add user');
 
     const exists = group.users.find((u) => u.id == recipient.id);
@@ -50,16 +50,16 @@ export class GroupParticipentService implements IGroupParticipentService {
 
     const group = await this.groupRepository.findOne({
       where: { id: groupId },
-      relations: ['users', 'creator'],
+      relations: ['users', 'creator', 'owner'],
     });
     console.log(group);
     console.log(recipientId);
     if (!group) throw new NotFoundException('group Not found');
 
-    if (removerId !== group.creator.id)
+    if (removerId !== group.creator.id && removerId !== group.owner.id)
       throw new BadRequestException('dont have premisson to delete user');
     if (recipientId == group.creator.id)
-      throw new BadRequestException('owner can not leave group');
+      throw new BadRequestException('owner can not remove group');
 
     const newUsers = group.users.filter((u) => u.id !== recipientId);
 

@@ -254,15 +254,28 @@ export class MessagingGateway implements OnGatewayConnection {
       recipientId,
       group: {
         id: groupId,
-        creator: { id: authorId },
+        creator: { id: creatorId },
+        owner: { id: ownerId },
       },
     } = payload;
 
-    console.log(recipientId);
-    const authorSocket = this.sessions.getUserSocket(authorId);
+    const creatorSocket = this.sessions.getUserSocket(creatorId);
+    const ownerSocket = this.sessions.getUserSocket(ownerId);
     const recipientSocket = this.sessions.getUserSocket(recipientId);
-    authorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
-    recipientSocket.emit('recipientAddedGroup', payload.group);
+    console.log(recipientSocket);
+    // if (creatorId == ownerId) {
+    //   creatorSocket &&
+    //     creatorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+    // } else {
+    //   creatorSocket &&
+    //     creatorSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+    //   ownerSocket &&
+    //     ownerSocket.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+    // }
+    this.server.to(`group-${groupId}`).emit('onUserAddedGroup', payload);
+
+    recipientSocket &&
+      recipientSocket.emit('recipientAddedGroup', payload.group);
   }
 
   @OnEvent('recipient.deleted')
@@ -273,16 +286,22 @@ export class MessagingGateway implements OnGatewayConnection {
       recipientId,
       group: {
         id: groupId,
-        creator: { id: authorId },
+        creator: { id: creatorId },
+        owner: { id: ownerId },
       },
     } = payload;
     const ROOM_NAME = `group-${groupId}`;
     const removedUserSocket = this.sessions.getUserSocket(recipientId);
-    const authorSocket = this.sessions.getUserSocket(authorId);
+    const creatorSocket = this.sessions.getUserSocket(creatorId);
+    const ownerSocket = this.sessions.getUserSocket(ownerId);
     if (removedUserSocket) {
       removedUserSocket.emit('onGroupRemovedRecipient', payload);
       removedUserSocket.leave(ROOM_NAME);
     }
-    authorSocket.to(ROOM_NAME).emit('onUserDeletetFromGroup', payload);
+    this.server.to(ROOM_NAME).emit('onUserDeletetFromGroup', payload);
+    //   const onlineUsers = group.users
+    //   .map((user) => this.sessions.getUserSocket(user.id) && user)
+    //   .filter((user) => user);
+    // this.server.to(ROOM_NAME).emit('onlineGroupUsersReceived', { onlineUsers });
   }
 }

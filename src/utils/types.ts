@@ -135,3 +135,9 @@ export type DeleteRecipientParam = {
   removerId: number;
   groupId: number;
 };
+
+export type TransferOwnerParams = {
+  username: string;
+  userId: number;
+  groupId: number;
+};
