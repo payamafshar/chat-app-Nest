@@ -58,6 +58,7 @@ export class GroupService implements IGroupService {
       .leftJoinAndSelect('group.users', 'users')
       .leftJoinAndSelect('group.lastMessageSent', 'lastMessageSent')
       .leftJoinAndSelect('group.creator', 'creator')
+      .leftJoinAndSelect('group.owner', 'owner')
       .orderBy('group.lastMessageSentAt', 'DESC')
       .getMany();
   }
@@ -88,10 +89,15 @@ export class GroupService implements IGroupService {
     if (!newOwner) throw new BadRequestException('cannot transfer admin');
     if (userId == newOwner.id)
       throw new BadRequestException('you are already owner');
-    if (userId !== group.creator.id || userId !== group.owner.id)
+    if (userId !== group.creator.id)
       throw new BadRequestException('insuficent premission');
 
     group.owner = newOwner;
-    return this.groupRepository.save(group);
+    const groupWithNewOwner = await this.groupRepository.save(group);
+
+    return {
+      groupWithNewOwner,
+      newOwnerId: newOwner.id,
+    };
   }
 }

@@ -55,16 +55,20 @@ export class GroupController {
     return response.send(group);
   }
   @Patch('/owner/:groupId')
-  transferOwner(
+  async transferOwner(
     @Body() transferOwnerDto: TransferOwnerDto,
     @Param('groupId', ParseIntPipe) groupId: number,
     @AuthUser() user: UserEntity,
+    @Res() response: Response,
   ) {
     const params = {
       username: transferOwnerDto.username,
       groupId,
       userId: user.id,
     };
-    return this.groupService.transferOwner(params);
+    const payload = await this.groupService.transferOwner(params);
+
+    this.eventEmitter.emit('transfer.owner.group', payload);
+    return response.send(payload);
   }
 }

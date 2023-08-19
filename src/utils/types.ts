@@ -141,3 +141,7 @@ export type TransferOwnerParams = {
   userId: number;
   groupId: number;
 };
+export type TransferOwnerEventPayload = {
+  groupWithNewOwner: GroupEntity;
+  newOwnerId: number;
+};

@@ -28,6 +28,7 @@ import {
   DeleteMessagePayload,
   DeleteRecipientFromGroupEventPayload,
   GroupMessageEventPayload,
+  TransferOwnerEventPayload,
 } from 'src/utils/types';
 import { Repository } from 'typeorm';
 
@@ -303,5 +304,29 @@ export class MessagingGateway implements OnGatewayConnection {
     //   .map((user) => this.sessions.getUserSocket(user.id) && user)
     //   .filter((user) => user);
     // this.server.to(ROOM_NAME).emit('onlineGroupUsersReceived', { onlineUsers });
+  }
+
+  @OnEvent('transfer.owner.group')
+  async handleTransferOwnerGroup(payload: TransferOwnerEventPayload) {
+    const {
+      newOwnerId,
+      groupWithNewOwner: {
+        creator: { id: issuerId },
+        id: groupId,
+      },
+    } = payload;
+    const ROOM_NAME = `group-${groupId}`;
+    const newOwnerSocket = this.sessions.getUserSocket(newOwnerId);
+    console.log(newOwnerSocket.rooms.has(ROOM_NAME));
+
+    const issuerSocket = this.sessions.getUserSocket(issuerId);
+    if (issuerSocket)
+      issuerSocket.to(ROOM_NAME).emit('onTransferOwner', payload);
+
+    //not work when user in other room and first join on ROOMNAME maybe handle from front
+    if (newOwnerSocket && !newOwnerSocket.rooms.has(ROOM_NAME)) {
+      console.log('The new owner is not in the room...');
+      newOwnerSocket.emit('onTransferOwner', payload);
+    }
   }
 }
