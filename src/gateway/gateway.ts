@@ -337,7 +337,8 @@ export class MessagingGateway implements OnGatewayConnection {
     const issuerSocket = this.sessions.getUserSocket(issuerId);
     const ROOM_NAME = `group-${groupId}`;
     this.server.to(ROOM_NAME).emit('onUserLeaveGroup', payload);
-    if (issuerSocket.rooms.has(ROOM_NAME)) {
+    // || FOR when user in another page or main page
+    if (issuerSocket || issuerSocket.rooms.has(ROOM_NAME)) {
       issuerSocket.emit('onUserLeaveGroup', payload);
     }
     issuerSocket.leave(ROOM_NAME);

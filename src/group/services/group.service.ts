@@ -100,9 +100,9 @@ export class GroupService implements IGroupService {
     const group = await this.findGroupById(groupId);
     if (!group) throw new BadRequestException();
     if (group.creator.id == userId && !group.owner && group.users.length >= 2) {
-      const newCreator = group.users[group.users.length - 1];
       const newGroup = group.users.filter((u) => u.id !== userId);
-      console.log('1111111111111111111111111111111');
+      const newCreator = newGroup[newGroup.length - 1];
+      console.log('111111111111111111111111111111s1');
       group.users = newGroup;
       group.creator = newCreator;
       return this.groupRepository.save(group);
