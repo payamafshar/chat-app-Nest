@@ -145,3 +145,13 @@ export type TransferOwnerEventPayload = {
   groupWithNewOwner: GroupEntity;
   newOwnerId: number;
 };
+
+export type LeaveUserFromGroup = {
+  userId: number;
+  groupId: number;
+};
+
+export type UserLeaveGroupEventPayload = {
+  issuerId: number;
+  group: GroupEntity;
+};

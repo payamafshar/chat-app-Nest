@@ -10,6 +10,7 @@ import {
   DeleteRecipientParam,
   EditGroupMessageParams,
   GetGroupsParam,
+  LeaveUserFromGroup,
   TransferOwnerParams,
 } from 'src/utils/types';
 
@@ -20,9 +21,9 @@ export interface IGroupService {
 
   findGroupById(groupId: number): Promise<GroupEntity>;
 
-  saveGroup(group: GroupEntity): Promise<GroupEntity>;
   hasAccess(params: AccessGroupParams): Promise<UserEntity | undefined>;
   transferOwner(params: TransferOwnerParams);
+  leaveGroup(params: LeaveUserFromGroup);
 }
 
 export interface IGroupMessageService {

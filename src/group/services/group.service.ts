@@ -8,16 +8,15 @@ import { IGroupService } from '../group';
 import { GroupEntity } from 'src/utils/typeOrm/entities/group.entity';
 import {
   AccessGroupParams,
-  AccessParams,
   CreateGroupParams,
   GetGroupsParam,
+  LeaveUserFromGroup,
   TransferOwnerParams,
 } from 'src/utils/types';
 import { Repositories, Services } from 'src/utils/constants';
 import { IUsersService } from 'src/users/users';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
-import { group } from 'console';
 
 @Injectable()
 export class GroupService implements IGroupService {
@@ -43,7 +42,6 @@ export class GroupService implements IGroupService {
     const groupInstance = this.groupRepository.create({
       users,
       title: title,
-      owner: creator,
       creator,
     });
 
@@ -70,9 +68,6 @@ export class GroupService implements IGroupService {
     });
   }
 
-  saveGroup(group: GroupEntity): Promise<GroupEntity> {
-    return this.groupRepository.save(group);
-  }
   async hasAccess({
     groupId,
     userId,
@@ -99,5 +94,32 @@ export class GroupService implements IGroupService {
       groupWithNewOwner,
       newOwnerId: newOwner.id,
     };
+  }
+
+  async leaveGroup({ userId, groupId }: LeaveUserFromGroup) {
+    const group = await this.findGroupById(groupId);
+    if (!group) throw new BadRequestException();
+    if (group.creator.id == userId && !group.owner && group.users.length >= 2) {
+      const newCreator = group.users[group.users.length - 1];
+      const newGroup = group.users.filter((u) => u.id !== userId);
+      console.log('1111111111111111111111111111111');
+      group.users = newGroup;
+      group.creator = newCreator;
+      return this.groupRepository.save(group);
+    } else if (group.creator.id == userId && group.owner) {
+      const newGroup = group.users.filter((u) => u.id !== userId);
+      group.users = newGroup;
+      group.creator = group.owner;
+      return this.groupRepository.save(group);
+    } else if (group.owner?.id == userId) {
+      group.owner = null;
+      const newGroup = group.users.filter((u) => u.id !== userId);
+      group.users = newGroup;
+      return this.groupRepository.save(group);
+    } else {
+      const newGroup = group.users.filter((u) => u.id !== userId);
+      group.users = newGroup;
+      return this.groupRepository.save(group);
+    }
   }
 }

@@ -29,6 +29,7 @@ import {
   DeleteRecipientFromGroupEventPayload,
   GroupMessageEventPayload,
   TransferOwnerEventPayload,
+  UserLeaveGroupEventPayload,
 } from 'src/utils/types';
 import { Repository } from 'typeorm';
 
@@ -256,12 +257,9 @@ export class MessagingGateway implements OnGatewayConnection {
       group: {
         id: groupId,
         creator: { id: creatorId },
-        owner: { id: ownerId },
       },
     } = payload;
 
-    const creatorSocket = this.sessions.getUserSocket(creatorId);
-    const ownerSocket = this.sessions.getUserSocket(ownerId);
     const recipientSocket = this.sessions.getUserSocket(recipientId);
     console.log(recipientSocket);
     // if (creatorId == ownerId) {
@@ -328,5 +326,20 @@ export class MessagingGateway implements OnGatewayConnection {
       console.log('The new owner is not in the room...');
       newOwnerSocket.emit('onTransferOwner', payload);
     }
+  }
+
+  @OnEvent('group.userLeave')
+  async handleUserLeaveFromGroup(payload: UserLeaveGroupEventPayload) {
+    const {
+      issuerId,
+      group: { id: groupId },
+    } = payload;
+    const issuerSocket = this.sessions.getUserSocket(issuerId);
+    const ROOM_NAME = `group-${groupId}`;
+    this.server.to(ROOM_NAME).emit('onUserLeaveGroup', payload);
+    if (issuerSocket.rooms.has(ROOM_NAME)) {
+      issuerSocket.emit('onUserLeaveGroup', payload);
+    }
+    issuerSocket.leave(ROOM_NAME);
   }
 }

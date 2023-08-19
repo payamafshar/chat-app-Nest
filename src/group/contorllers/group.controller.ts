@@ -71,4 +71,26 @@ export class GroupController {
     this.eventEmitter.emit('transfer.owner.group', payload);
     return response.send(payload);
   }
+
+  @Post('/:groupId/leave')
+  async leaveUser(
+    @Param('groupId', ParseIntPipe) groupId: number,
+    @AuthUser() user: UserEntity,
+    @Res() response: Response,
+  ) {
+    const params = {
+      userId: user.id,
+      groupId,
+    };
+    const newGroup = await this.groupService.leaveGroup(params);
+    this.eventEmitter.emit('group.userLeave', {
+      group: newGroup,
+      issuerId: user.id,
+    });
+
+    return response.send({
+      group: newGroup,
+      issuerId: user.id,
+    });
+  }
 }

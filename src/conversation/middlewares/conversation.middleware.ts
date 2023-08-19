@@ -19,7 +19,7 @@ export class ConversationMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    const { id: userId } = req.user;
+    const { id: userId } = req.user || {};
     if (!userId) throw new UnauthorizedException('Unauthorized');
     const conversationId = parseInt(req.params.id);
     console.log('inside middleware 11111111111111');
