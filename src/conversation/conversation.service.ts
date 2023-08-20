@@ -66,11 +66,8 @@ export class ConversationService implements IConversationService {
 
       const message = await this.messagesRepository.save(newMessage);
 
-      await this.conversationRepository.update(
-        { id: conversation.id },
-        { lastMessageSent: message },
-      );
-      return conversation;
+      conversation.lastMessageSent = message;
+      return this.conversationRepository.save(conversation);
     }
 
     return conversation;
