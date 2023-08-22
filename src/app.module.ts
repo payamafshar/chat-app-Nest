@@ -11,6 +11,8 @@ import { MessageModule } from './message/message.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { GroupModule } from './group/group.module';
+import { FirendRequestModule } from './firend-request/firend-request.module';
+import { FirendsModule } from './firends/firends.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { GroupModule } from './group/group.module';
     GatewayModule,
     EventEmitterModule.forRoot(),
     GroupModule,
+    FirendRequestModule,
+    FirendsModule,
   ],
   controllers: [],
   providers: [...databaseProviders, ...sessionProvider],

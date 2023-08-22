@@ -155,3 +155,29 @@ export type UserLeaveGroupEventPayload = {
   issuerId: number;
   group: GroupEntity;
 };
+
+export type CreateFirendRequestParams = {
+  receiverUsername: string;
+  sender: UserEntity;
+};
+
+export type FriendRequestStatus = 'pending' | 'rejected' | 'accepted';
+
+export type AcceptFirendRequestParams = {
+  reqId: number;
+  receiverId: number;
+};
+
+export type RejectFirendRequestParams = {
+  reqId: number;
+  receiverId: number;
+};
+export type CancelFirendRequestParams = {
+  reqId: number;
+  receiverId: number;
+};
+
+export type DeleteFirendParams = {
+  issuerId: number;
+  firendId: number;
+};

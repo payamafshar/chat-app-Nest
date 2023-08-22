@@ -6,6 +6,8 @@ export enum Routes {
   GROUP = 'group',
   GROUP_MESSAGE = 'groupMessage/:groupId',
   GROUP_PARTICIPENT = 'groups/:groupId',
+  FIREND_REQUEST = 'firendRequest',
+  FIRENDS = 'firends',
 }
 
 export enum Services {
@@ -17,6 +19,8 @@ export enum Services {
   GROUP = 'GROUP_SERVICE',
   GROUP_MESSAGE = 'GROUP_MESSAGE_SERVICE',
   GROUP_PARTICIPENT = 'GROUP_PARTICIPENT',
+  FIREND_REQUEST = 'FIREND_REQUEST',
+  FIRENDS = 'FIRENDS',
 }
 
 export enum Repositories {
@@ -27,6 +31,8 @@ export enum Repositories {
   GROUP = 'GROUP_REPOSITORY',
   GROUP_MESSAGE = 'GROUP_MESSAGE_REPOSITORY',
   GROUP_PARTICIPENT = 'GROUP_PARTICIPENT',
+  FIREND_REQUEST = 'FIREND_REQUEST_REPOSITORY',
+  FIRENDS = 'FIRENDS_REPOSITORY',
 }
 
 export const DATASOURCE_TOKEN = 'DATA_SOURCE';

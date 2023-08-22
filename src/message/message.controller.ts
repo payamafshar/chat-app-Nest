@@ -9,6 +9,8 @@ import {
   Delete,
   Patch,
   Res,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { Routes, Services } from 'src/utils/constants';
 import IMessageService from './message';
@@ -46,10 +48,12 @@ export class MessageController {
     conversationId: number,
     @AuthUser() user: UserEntity,
     @Res() response: Response,
+    @Query('skip', new DefaultValuePipe(0), ParseIntPipe) skip: number,
   ) {
     const messages = await this.messageService.getMessagesByConversationId(
       conversationId,
       user,
+      skip,
     );
 
     return response.send({

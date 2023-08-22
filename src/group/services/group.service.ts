@@ -47,7 +47,7 @@ export class GroupService implements IGroupService {
 
     return this.groupRepository.save(groupInstance);
   }
-
+  
   getGroups(param: GetGroupsParam): Promise<GroupEntity[]> {
     return this.groupRepository
       .createQueryBuilder('group')

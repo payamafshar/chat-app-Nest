@@ -11,6 +11,7 @@ export default interface IMessageService {
   getMessagesByConversationId(
     conversationId: number,
     user: UserEntity,
+    skip: number,
   ): Promise<MessageEntity[]>;
   deleteMessageWithParams(params: DeleteMessageParams);
 

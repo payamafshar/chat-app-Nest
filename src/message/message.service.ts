@@ -59,12 +59,15 @@ export class MessageService implements IMessageService {
   async getMessagesByConversationId(
     conversationId: number,
     user: UserEntity,
+    // skip: number,
   ): Promise<MessageEntity[]> {
     console.log({ conversationId });
     return this.messageRepository.find({
       where: { conversation: { id: conversationId } },
       order: { createdAt: 'DESC' },
       relations: ['author'],
+      // skip,
+      // take: 100,
     });
 
     //there is option in typeOrm is loadRelationIds : boolean if neccessery
