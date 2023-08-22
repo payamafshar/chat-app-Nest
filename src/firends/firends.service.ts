@@ -33,10 +33,13 @@ export class FirendsService implements IFirendService {
   }
 
   getFirends(userId: number): Promise<FriendEntity[]> {
-    return this.firendsRepository.find({
-      where: [{ sender: { id: userId }, receiver: { id: userId } }],
-      relations: ['sender', 'receiver'],
-    });
+    return this.firendsRepository
+      .createQueryBuilder('firends')
+      .where('sender.id = :userId', { userId })
+      .orWhere('receiver.id = :userId', { userId })
+      .leftJoinAndSelect('firends.receiver', 'receiver')
+      .leftJoinAndSelect('firends.sender', 'sender')
+      .getMany();
   }
 
   findFriendById(id: number): Promise<FriendEntity> {
@@ -60,5 +63,7 @@ export class FirendsService implements IFirendService {
       findedFirend.sender.id !== issuerId
     )
       throw new BadRequestException('cannot delete firend');
+
+    return this.firendsRepository.delete(firendId);
   }
 }

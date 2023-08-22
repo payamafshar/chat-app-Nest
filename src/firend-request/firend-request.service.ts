@@ -43,11 +43,12 @@ export class FirendRequestService implements IFriendRequestService {
 
     if (sentedPendingRequest)
       throw new BadRequestException('request is pending');
-    const exists = this.firendsService.isFirends(sender.id, receiver.id);
+    const exists = await this.firendsService.isFirends(sender.id, receiver.id);
+    console.log(exists);
+    if (exists) throw new BadRequestException('firend already exists');
 
     if (receiver.id === sender.id)
       throw new BadRequestException('Cannot Add Yourself');
-    if (exists) throw new BadRequestException('firend already exists');
 
     const friend = this.firendRequestRepository.create({
       sender,
@@ -74,7 +75,8 @@ export class FirendRequestService implements IFriendRequestService {
     if (!firendRequest) throw new NotFoundException('request not found');
     if (firendRequest.status == 'accepted')
       throw new BadRequestException('firend request already accepted');
-    // if(firendRequest.receiver.id == userId) throw new BadRequestException('can not send request ')
+    if (firendRequest.receiver.id !== userId)
+      throw new BadRequestException('Exeption');
     firendRequest.status = 'accepted';
     const updatedRequest = await this.firendRequestRepository.save(
       firendRequest,
@@ -90,9 +92,14 @@ export class FirendRequestService implements IFriendRequestService {
     };
   }
 
-  async rejectFirendRequest({ receiverId, reqId }: RejectFirendRequestParams) {
+  async rejectFirendRequest({
+    receiverId: userId,
+    reqId,
+  }: RejectFirendRequestParams) {
     const firendRequest = await this.findById(reqId);
     if (!firendRequest) throw new NotFoundException('request not found');
+    if (firendRequest.receiver.id !== userId)
+      throw new BadRequestException('EXEPTION');
 
     if (firendRequest.status == 'accepted')
       throw new BadRequestException('firend request already accepted');
@@ -101,10 +108,15 @@ export class FirendRequestService implements IFriendRequestService {
     return this.firendRequestRepository.save(firendRequest);
   }
 
-  async cancelFirendRequest({ receiverId, reqId }: CancelFirendRequestParams) {
+  async cancelFirendRequest({
+    receiverId: userId,
+    reqId,
+  }: CancelFirendRequestParams) {
     const firendRequest = await this.findById(reqId);
     if (!firendRequest) throw new NotFoundException('request not found');
-
+    // Double Check //??
+    if (firendRequest.sender.id !== userId)
+      throw new BadRequestException('Exeption');
     await this.firendRequestRepository.delete(reqId);
     return firendRequest;
   }

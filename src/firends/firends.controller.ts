@@ -19,6 +19,7 @@ export class FirendsController {
 
   @Get('findAll')
   findAll(@AuthUser() user: UserEntity) {
+    console.log('1111');
     return this.firendsService.getFirends(user.id);
   }
 
