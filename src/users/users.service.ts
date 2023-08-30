@@ -1,6 +1,5 @@
 import { Injectable, HttpException, HttpStatus, Inject } from '@nestjs/common';
 import { IUsersService } from './users';
-import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { Repository } from 'typeorm';
 import {

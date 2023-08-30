@@ -16,7 +16,7 @@ import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { CreateFirendRequestDto } from './dtos/createFirendRequest.dto';
 
 @Controller(Routes.FIREND_REQUEST)
-export class FirendRequestController {
+export class FirendRequestController  {
   constructor(
     @Inject(Services.FIREND_REQUEST)
     private readonly firendRequestService: IFriendRequestService,
