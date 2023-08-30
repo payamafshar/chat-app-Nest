@@ -3,9 +3,9 @@ import { AuthService } from '../auth.service';
 import { Services } from 'src/utils/constants';
 import { IUsersService } from 'src/users/users';
 import { IAuthService } from '../auth';
-import { FindUserOptions, FindUserParams } from 'src/utils/types';
 import { UserEntity } from 'src/utils/typeOrm/entities/user.entity';
 import { userMock } from 'src/_mocks/users.mock';
+import * as bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
   let authService: IAuthService;
@@ -58,11 +58,17 @@ describe('AuthService', () => {
       ).rejects.toThrowError();
     });
     it.only('compare password with hash and if valid password return user else return null', async () => {
+      const compareMock = jest.spyOn(bcrypt, 'compare');
+      compareMock.mockImplementationOnce(() => Promise.resolve(true));
       await authService.validateUser({
         username: userMock.username,
         password: userMock.password,
       });
       const user = await usersService.findUser({ username: userMock.username });
+      expect(compareMock).toHaveBeenCalledWith(
+        userMock.password,
+        user.password,
+      );
       expect(user.password).toEqual(userMock.password);
     });
   });
