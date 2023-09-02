@@ -11,4 +11,5 @@ export interface IConversationService {
   findConversationById(id: number): Promise<ConversationEntity>;
   getLoginUserConversations(id: number): Promise<ConversationEntity[]>;
   hasAccess(params: AccessParams);
+  isCreated(userId: number, recipientId: number);
 }

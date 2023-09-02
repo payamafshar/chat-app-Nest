@@ -18,14 +18,10 @@ import { instanceToPlain } from 'class-transformer';
 import { AuthenticatedGuard, LocalAuthGuard } from './Strategy/guards';
 import { Request, Response } from 'express';
 import { RegisterInterceptor } from './Strategy/registerInterceptor';
-import { SessionSerializer } from './Strategy/sessionSerializer';
 
 @Controller(Routes.AUTH)
 export class AuthController {
-  constructor(
-    @Inject(Services.AUTH) private authService: IAuthService,
-    @Inject(Services.USERS) private usersService: IUsersService,
-  ) {}
+  constructor(@Inject(Services.USERS) private usersService: IUsersService) {}
 
   @Post('register')
   @UseInterceptors(RegisterInterceptor)
